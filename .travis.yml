@@ -35,6 +35,7 @@ matrix:
     - env: JOB=APK
       os: linux
       language: android
+      install: ant deps
       licenses:
         - 'android-sdk-preview-license-.+'
         - 'android-sdk-license-.+'
