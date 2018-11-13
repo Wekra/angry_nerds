@@ -33,14 +33,8 @@ matrix:
 
     # Builds an APK
     - env: JOB=APK
-      os:
-        - linux
-      sudo: false
+      os: linux
       language: android
-      jdk: oraclejdk8
-      before_install:
-        - sudo apt-get update
-        - sudo apt-get install -y ant
       licenses:
         - 'android-sdk-preview-license-.+'
         - 'android-sdk-license-.+'
@@ -55,6 +49,8 @@ matrix:
           - extra-android-m2repository
           - extra-google-m2repository
           - extra-google-android-support
+      jdk: oraclejdk8
+      sudo: false
       addons:
         apt:
           # Flutter depends on /usr/lib/x86_64-linux-gnu/libstdc++.so.6 version GLIBCXX_3.4.18
@@ -70,6 +66,7 @@ matrix:
             - unzip gradle-3.5-bin.zip
             - export GRADLE_HOME=$PWD/gradle-3.5
             - export PATH=$GRADLE_HOME/bin:$PATH
+            - git clone https://github.com/flutter/flutter.git -b beta
             - git clone https://github.com/flutter/flutter.git -b beta
             - export PATH=./flutter/bin:$PATH
           script:
