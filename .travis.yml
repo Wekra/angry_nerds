@@ -39,14 +39,6 @@ matrix:
       language: android
       jdk:
         - oraclejdk8
-      before_install:
-        - sudo apt-get update
-        - sudo apt-get install unzip
-        - wget https://services.gradle.org/distributions/gradle-3.5-bin.zip
-        - unzip gradle-3.5-bin.zip
-      install:
-        - export GRADLE_HOME=$PWD/gradle-3.5
-        - export PATH=$GRADLE_HOME/bin:$PATH
       licenses:
         - 'android-sdk-preview-license-.+'
         - 'android-sdk-license-.+'
@@ -70,10 +62,16 @@ matrix:
             - libstdc++6
             - fonts-droid
           before_script:
+            - sudo apt-get update
+            - sudo apt-get install unzip
+            - wget https://services.gradle.org/distributions/gradle-3.5-bin.zip
+            - unzip gradle-3.5-bin.zip
+            - export GRADLE_HOME=$PWD/gradle-3.5
+            - export PATH=$GRADLE_HOME/bin:$PATH
             - git clone https://github.com/flutter/flutter.git -b beta
             - export PATH=./flutter/bin:$PATH
           script:
-            - flutter -v build apk
+            - ./flutter/bin/flutter -v build apk
 
     # Builds an IPA.
     #- env: JOB=IPA
