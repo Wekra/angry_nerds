@@ -38,6 +38,9 @@ matrix:
       sudo: false
       language: android
       jdk: oraclejdk8
+      before_install:
+        - sudo apt-get update
+        - sudo apt-get install -y ant
       licenses:
         - 'android-sdk-preview-license-.+'
         - 'android-sdk-license-.+'
