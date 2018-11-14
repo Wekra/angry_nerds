@@ -64,12 +64,16 @@ matrix:
             - libstdc++6
             - fonts-droid
       before_script:
-        - sudo apt-get update
-        - sudo apt-get install unzip
-        - wget https://services.gradle.org/distributions/gradle-3.5-bin.zip
-        - unzip gradle-3.5-bin.zip
-        - export GRADLE_HOME=$PWD/gradle-3.5
-        - export PATH=$GRADLE_HOME/bin:$PATH
+        #- sudo apt-get update
+        #- sudo apt-get install unzip
+        #- wget https://services.gradle.org/distributions/gradle-3.5-bin.zip
+        #- unzip gradle-3.5-bin.zip
+        #- export GRADLE_HOME=$PWD/gradle-3.5
+        #- export PATH=$GRADLE_HOME/bin:$PATH
+
+        #Prepare pre-accepted licenses to not be promted at installation
+        - mkdir -p "$ANDROID_HOME/licenses"
+        - cp ./google_licenses/* "$ANDROID_HOME/licenses/"
         - git clone https://github.com/flutter/flutter.git -b beta
         - export PATH=./flutter/bin:$PATH
       script:
