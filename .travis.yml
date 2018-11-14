@@ -63,17 +63,17 @@ matrix:
           packages:
             - libstdc++6
             - fonts-droid
-          before_script:
-            - sudo apt-get update
-            - sudo apt-get install unzip
-            - wget https://services.gradle.org/distributions/gradle-3.5-bin.zip
-            - unzip gradle-3.5-bin.zip
-            - export GRADLE_HOME=$PWD/gradle-3.5
-            - export PATH=$GRADLE_HOME/bin:$PATH
-            - git clone https://github.com/flutter/flutter.git -b beta
-            - export PATH=./flutter/bin:$PATH
-          script:
-            - ./flutter/bin/flutter -v build apk
+      before_script:
+        - sudo apt-get update
+        - sudo apt-get install unzip
+        - wget https://services.gradle.org/distributions/gradle-3.5-bin.zip
+        - unzip gradle-3.5-bin.zip
+        - export GRADLE_HOME=$PWD/gradle-3.5
+        - export PATH=$GRADLE_HOME/bin:$PATH
+        - git clone https://github.com/flutter/flutter.git -b beta
+        - export PATH=./flutter/bin:$PATH
+      script:
+        - ./flutter/bin/flutter -v build apk
 
     # Builds an IPA.
     #- env: JOB=IPA
