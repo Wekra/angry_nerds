@@ -35,5 +35,5 @@ abstract class AppRepository {
 
   Future<void> createAppointmentForTechnician(int technicianId, Appointment newAppointment);
 
-  Future<void> addAppointmentInterval(int appointmentId, AppointmentInterval interval);
+//  Future<void> addAppointmentInterval(int appointmentId, AppointmentInterval interval);
 }

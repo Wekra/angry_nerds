@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'dart:async';
-import 'package:startup_namer/widgets/ConnectedList.dart';
+import '../firebase/create_appointment.dart';
+import 'package:startup_namer/widgets/connected_list.dart';
 
 class ServiceHomePage extends StatefulWidget {
   @override
@@ -16,18 +17,11 @@ class _ServiceHomePageState extends State<ServiceHomePage> {
   DatabaseReference _appointmentRef;
   StreamSubscription<Event> _appointmentSubscription;
 
-  /// Initialize State: get db reference and start subscription
+  /// Initialize State: get db reference
   @override
   void initState() {
     super.initState();
     _appointmentRef = FirebaseDatabase.instance.reference().child('appointment');
-    _appointmentSubscription =
-        _appointmentRef.limitToLast(10).onChildAdded.listen((Event event) {
-          print('Child added: ${event.snapshot.value}');
-        }, onError:( Object o) {
-      final DatabaseError error = o;
-      print('Error: ${error.code} ${error.message}');
-    });
   }
   
   /// Destroy subscriptions on leave
@@ -37,7 +31,7 @@ class _ServiceHomePageState extends State<ServiceHomePage> {
     _appointmentSubscription.cancel();
   }
 
-  /// Builds the service appoitnment page
+  /// Builds the service appointment page
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -50,7 +44,9 @@ class _ServiceHomePageState extends State<ServiceHomePage> {
           elevation: 0.0,
           child: new Icon(Icons.add),
           backgroundColor: Colors.purpleAccent,
-          onPressed: (){_createAppointment();}
+          onPressed: () {
+            FirebaseAppointment.createAppointment(_appointmentRef, null).catchError(_onDBError);
+          }
       ),
     );
   }
@@ -63,24 +59,6 @@ class _ServiceHomePageState extends State<ServiceHomePage> {
     );
   }
 
-  /// Creates a new Appointment in firebase
-  void _createAppointment(){
-    var creation = new DateTime.now().millisecondsSinceEpoch.toString();
-    var dummyAppointment = {
-      "created": creation,
-      "description": "Fix the printer",
-      "scheduled-start": "timestamp",
-      "scheduled-end": "tiimestamp",
-      "service-start": "null",
-      "service-end": "null",
-      "customer": "nike",
-      "target": "should be target ID",
-      "parts": [
-        {"part-id-1":"part-id-1"}
-      ]
-    };
-    _appointmentRef.push().set(dummyAppointment).catchError(_onDBError);
-  }
   /// Database error handler
   void _onDBError(Object o) {
     final DatabaseError error = o;
