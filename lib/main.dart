@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'homepage.dart';
+import 'package:startup_namer/screens/appointment_list.dart';
 
 void main() => runApp(ServiceApp());
 

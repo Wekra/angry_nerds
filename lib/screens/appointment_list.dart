@@ -1,9 +1,7 @@
-import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
-
 import 'dart:async';
-
+import 'package:startup_namer/widgets/ConnectedList.dart';
 
 class ServiceHomePage extends StatefulWidget {
   @override
@@ -47,7 +45,7 @@ class _ServiceHomePageState extends State<ServiceHomePage> {
         title: Text('Service Appointments'),
         backgroundColor: Colors.teal[300],
       ),
-      body: _buildList(_appointmentRef),
+      body: ConnectedList(_appointmentRef, _buildListItem),
       floatingActionButton: new FloatingActionButton(
           elevation: 0.0,
           child: new Icon(Icons.add),
@@ -55,20 +53,6 @@ class _ServiceHomePageState extends State<ServiceHomePage> {
           onPressed: (){_createAppointment();}
       ),
     );
-  }
-
-  /// Builds the list widget as firebase Animated list
-  Widget _buildList(collection) {
-    return FirebaseAnimatedList(
-        query: collection,
-        reverse: false,
-        itemBuilder: (BuildContext context, DataSnapshot snapshot,
-            Animation<double> animation, int index) {
-          return SizeTransition(
-              sizeFactor: animation,
-              child: _buildListItem(snapshot.value)
-          );
-        });
   }
 
   /// Builds the list-item widget
