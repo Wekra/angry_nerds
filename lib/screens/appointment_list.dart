@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'dart:async';
+
 import '../firebase/firebase_appointment.dart';
-import 'package:startup_namer/widgets/connected_list.dart';
+import '../widgets/connected_list.dart';
 
 class ServiceHomePage extends StatefulWidget {
   @override

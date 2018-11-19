@@ -1,4 +1,4 @@
-import 'package:startup_namer/data/model/address.dart';
+import 'package:service_app/data/model/address.dart';
 
 class Customer {
   final int id;
