@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:service_app/screens/appointment_detail.dart';
 
 import '../firebase/firebase_appointment.dart';
 import '../widgets/connected_list.dart';
@@ -44,10 +45,16 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
   }
 
   /// Builds the list-item widget
-  Widget _buildListItem(item) {
+  Widget _buildListItem(item, String key) {
     return ListTile(
       title: Text(item['description'].toString()),
       subtitle: Text(item['customer']),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => AppointmentPage(key)),
+        );
+        },
     );
   }
 

@@ -21,10 +21,10 @@ class ConnectedList extends StatelessWidget {
             Animation<double> animation, int index) {
           return SizeTransition(
               sizeFactor: animation,
-              child: itemBuilder(snapshot.value)
+              child: itemBuilder(snapshot.value, snapshot.key)
           );
         });
   }
 }
 
-typedef ItemCallback = Widget Function(Object item);
+typedef ItemCallback = Widget Function(Object item, String key);
