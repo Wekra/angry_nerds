@@ -10,11 +10,11 @@ import 'package:startup_namer/main.dart';
 void main() {
   testWidgets('App is available smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame
-    /*await tester.pumpWidget(new ServiceApp());
+    await tester.pumpWidget(new ServiceApp());
 
     // Verify that our counter starts at 0.
     expect(find.text('Service Appointments'), findsOneWidget);
-    expect(find.text('1'), findsNothing);*/
+    expect(find.text('1'), findsNothing);
 
     // Tap the '+' icon and trigger a frame.
     /*await tester.tap(find.byIcon(Icons.add));

@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'dart:async';
-import '../firebase/firebase_appointment.dart';
+import 'package:flutter/material.dart';
 import 'package:startup_namer/widgets/connected_list.dart';
+
+import '../firebase/firebase_appointment.dart';
 
 class ServiceHomePage extends StatefulWidget {
   @override
@@ -13,22 +13,14 @@ class ServiceHomePage extends StatefulWidget {
 
 ///Service home page renders the appointment list
 class _ServiceHomePageState extends State<ServiceHomePage> {
-
   DatabaseReference _appointmentRef;
-  StreamSubscription<Event> _appointmentSubscription;
 
   /// Initialize State: get db reference
   @override
   void initState() {
     super.initState();
-    _appointmentRef = FirebaseDatabase.instance.reference().child('appointment');
-  }
-  
-  /// Destroy subscriptions on leave
-  @override
-  void dispose() {
-    super.dispose();
-    _appointmentSubscription.cancel();
+    _appointmentRef =
+        FirebaseDatabase.instance.reference().child('appointment');
   }
 
   /// Builds the service appointment page
@@ -45,9 +37,9 @@ class _ServiceHomePageState extends State<ServiceHomePage> {
           child: new Icon(Icons.add),
           backgroundColor: Colors.purpleAccent,
           onPressed: () {
-            FirebaseAppointment.createAppointment(_appointmentRef, null).catchError(_onDBError);
-          }
-      ),
+            FirebaseAppointment.createAppointment(_appointmentRef, null)
+                .catchError(_onDBError);
+          }),
     );
   }
 
@@ -65,5 +57,3 @@ class _ServiceHomePageState extends State<ServiceHomePage> {
     print('Error: ${error.code} ${error.message}');
   }
 }
-
-
