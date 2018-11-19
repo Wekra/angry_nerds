@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:service_app/screens/appointment_detail.dart';
 
+import '../widgets/navigation_drawer.dart';
 import '../firebase/firebase_appointment.dart';
 import '../widgets/connected_list.dart';
 
@@ -29,18 +30,17 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: AppBar(
-        title: Text('Service Appointments'),
-        backgroundColor: Colors.teal[300],
+        title: Text('Appointments'),
       ),
       body: ConnectedList(_appointmentRef, _buildListItem),
       floatingActionButton: new FloatingActionButton(
           elevation: 0.0,
           child: new Icon(Icons.add),
-          backgroundColor: Colors.purpleAccent,
           onPressed: () {
             FirebaseAppointment.createAppointment(_appointmentRef, null).catchError(_onDBError);
           }
       ),
+      drawer: NavDrawer(),
     );
   }
 
