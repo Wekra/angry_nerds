@@ -1,35 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'dart:async';
 
 import '../firebase/firebase_appointment.dart';
 import '../widgets/connected_list.dart';
 
-class ServiceHomePage extends StatefulWidget {
+class AppointmentListPage extends StatefulWidget {
   @override
-  _ServiceHomePageState createState() {
-    return _ServiceHomePageState();
+  _AppointmentListPageState createState() {
+    return _AppointmentListPageState();
   }
 }
 
 ///Service home page renders the appointment list
-class _ServiceHomePageState extends State<ServiceHomePage> {
+class _AppointmentListPageState extends State<AppointmentListPage> {
 
   DatabaseReference _appointmentRef;
-  StreamSubscription<Event> _appointmentSubscription;
 
   /// Initialize State: get db reference
   @override
   void initState() {
     super.initState();
     _appointmentRef = FirebaseDatabase.instance.reference().child('appointment');
-  }
-  
-  /// Destroy subscriptions on leave
-  @override
-  void dispose() {
-    super.dispose();
-    _appointmentSubscription.cancel();
   }
 
   /// Builds the service appointment page

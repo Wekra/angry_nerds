@@ -12,7 +12,7 @@ class ServiceApp extends StatelessWidget {
         primaryColor: Colors.amber,
         canvasColor: Colors.white,
       ),
-      home: ServiceHomePage(),
+      home: AppointmentListPage(),
     );
   }
 }
