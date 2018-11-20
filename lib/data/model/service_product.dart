@@ -1,5 +1,5 @@
-import 'package:startup_namer/data/model/appointment.dart';
-import 'package:startup_namer/data/model/part_bundle.dart';
+import 'package:service_app/data/model/appointment.dart';
+import 'package:service_app/data/model/part_bundle.dart';
 
 class ServiceProduct {
   final int id;

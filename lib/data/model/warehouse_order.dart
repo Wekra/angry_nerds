@@ -1,4 +1,4 @@
-import 'package:startup_namer/data/model/part_bundle.dart';
+import 'package:service_app/data/model/part_bundle.dart';
 
 class WarehouseOrder {
   final int id;
