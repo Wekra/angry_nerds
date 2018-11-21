@@ -32,7 +32,8 @@ matrix:
         - coveralls-lcov coverage/lcov.info
 
     # Builds an APK
-    - env:
+    - if: (branch = master) OR (branch = development)
+      env:
         - JOB=APK
         - ANDROID_HOME=$HOME/android-sdk
       os:
@@ -40,10 +41,6 @@ matrix:
       sudo: false
       language: android
       jdk: oraclejdk8
-      branches:
-        only:
-        - master
-        - development
       before_cache:
         # Do not cache a few Gradle files/directories (see https://docs.travis-ci.com/user/languages/java/#Caching)
         - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
