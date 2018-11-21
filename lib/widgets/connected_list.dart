@@ -1,4 +1,3 @@
-
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/widgets.dart';
@@ -22,10 +21,10 @@ class ConnectedList extends StatelessWidget {
             Animation<double> animation, int index) {
           return SizeTransition(
               sizeFactor: animation,
-              child: itemBuilder(snapshot.value)
+              child: itemBuilder(snapshot.value, snapshot.key)
           );
         });
   }
 }
 
-typedef ItemCallback = Widget Function(Object item);
+typedef ItemCallback = Widget Function(Object item, String key);

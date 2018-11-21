@@ -1,4 +1,4 @@
-import 'package:startup_namer/data/model/part.dart';
+import 'package:service_app/data/model/part.dart';
 
 class PartBundle {
   final int id;

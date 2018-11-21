@@ -1,5 +1,5 @@
 
-import 'package:startup_namer/data/model/appointment.dart';
+import 'package:service_app/data/model/appointment.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 

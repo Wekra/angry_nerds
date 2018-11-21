@@ -1,9 +1,9 @@
-import 'package:startup_namer/data/model/appointment.dart';
-import 'package:startup_namer/data/model/customer.dart';
-import 'package:startup_namer/data/model/device.dart';
-import 'package:startup_namer/data/model/note.dart';
-import 'package:startup_namer/data/model/service_product.dart';
-import 'package:startup_namer/data/model/warehouse_order.dart';
+import 'package:service_app/data/model/appointment.dart';
+import 'package:service_app/data/model/customer.dart';
+import 'package:service_app/data/model/device.dart';
+import 'package:service_app/data/model/note.dart';
+import 'package:service_app/data/model/service_product.dart';
+import 'package:service_app/data/model/warehouse_order.dart';
 
 abstract class AppRepository {
   // -------------------- Notes
