@@ -1,9 +1,9 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:service_app/screens/appointment_detail.dart';
+import 'package:service_app/data/firebase_repository.dart';
+import 'package:service_app/data/model/appointment.dart';
+import 'package:service_app/widgets/animated_operations_list.dart';
 
-import '../firebase/firebase_appointment.dart';
-import '../widgets/connected_list.dart';
 import '../widgets/navigation_drawer.dart';
 
 class AppointmentListPage extends StatefulWidget {
@@ -15,16 +15,6 @@ class AppointmentListPage extends StatefulWidget {
 
 ///Service home page renders the appointment list
 class _AppointmentListPageState extends State<AppointmentListPage> {
-  DatabaseReference _appointmentRef;
-
-  /// Initialize State: get db reference
-  @override
-  void initState() {
-    super.initState();
-    _appointmentRef =
-        FirebaseDatabase.instance.reference().child('appointment');
-  }
-
   /// Builds the service appointment page
   @override
   Widget build(BuildContext context) {
@@ -32,29 +22,27 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
       appBar: AppBar(
         title: Text('Appointments'),
       ),
-      body: ConnectedList(_appointmentRef, _buildListItem),
+      body: AnimatedOperationsList(
+          stream: FirebaseRepository.instance.getAppointmentsOfTechnician(),
+          itemBuilder: _buildListItem
+      ),
       floatingActionButton: new FloatingActionButton(
           elevation: 0.0,
           child: new Icon(Icons.add),
-          onPressed: () {
-            FirebaseAppointment.createAppointment(_appointmentRef, null)
-                .catchError(_onDBError);
-          }),
+          onPressed: () =>
+              FirebaseRepository.instance.createAppointmentForTechnician(
+                  new Appointment("abc", "Desc", DateTime.now(), DateTime.now(), DateTime.now(), [])
+              )
+      ),
       drawer: NavDrawer(),
     );
   }
 
   /// Builds the list-item widget
-  Widget _buildListItem(item, String key) {
+  Widget _buildListItem(BuildContext context, Appointment appointment, Animation<double> animation, int index) {
     return ListTile(
-      title: Text(item['description'].toString()),
-      subtitle: Text(item['customer']),
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => AppointmentPage(key)),
-        );
-      },
+      title: Text(appointment.description),
+      subtitle: Text(appointment.scheduledStartTime.toString()),
     );
   }
 

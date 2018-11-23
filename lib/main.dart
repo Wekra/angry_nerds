@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:service_app/data/firebase_repository.dart';
 import 'package:service_app/screens/appointment_list.dart';
 import 'package:service_app/screens/foo_bar.dart';
 
@@ -8,6 +9,7 @@ class ServiceApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FirebaseRepository.init(5);
     return MaterialApp(
       title: 'Service App',
       theme: new ThemeData(
@@ -26,4 +28,3 @@ class ServiceApp extends StatelessWidget {
     );
   }
 }
-
