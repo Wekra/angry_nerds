@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/material.dart';
 import 'package:service_app/screens/appointment_detail.dart';
 
-import '../widgets/navigation_drawer.dart';
 import '../firebase/firebase_appointment.dart';
 import '../widgets/connected_list.dart';
+import '../widgets/navigation_drawer.dart';
 
 class AppointmentListPage extends StatefulWidget {
   @override
@@ -15,14 +15,14 @@ class AppointmentListPage extends StatefulWidget {
 
 ///Service home page renders the appointment list
 class _AppointmentListPageState extends State<AppointmentListPage> {
-
   DatabaseReference _appointmentRef;
 
   /// Initialize State: get db reference
   @override
   void initState() {
     super.initState();
-    _appointmentRef = FirebaseDatabase.instance.reference().child('appointment');
+    _appointmentRef =
+        FirebaseDatabase.instance.reference().child('appointment');
   }
 
   /// Builds the service appointment page
@@ -37,9 +37,9 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
           elevation: 0.0,
           child: new Icon(Icons.add),
           onPressed: () {
-            FirebaseAppointment.createAppointment(_appointmentRef, null).catchError(_onDBError);
-          }
-      ),
+            FirebaseAppointment.createAppointment(_appointmentRef, null)
+                .catchError(_onDBError);
+          }),
       drawer: NavDrawer(),
     );
   }
@@ -54,7 +54,7 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
           context,
           MaterialPageRoute(builder: (context) => AppointmentPage(key)),
         );
-        },
+      },
     );
   }
 
@@ -64,5 +64,3 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
     print('Error: ${error.code} ${error.message}');
   }
 }
-
-

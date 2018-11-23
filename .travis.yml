@@ -1,23 +1,108 @@
-#language: dart
-#dart:
-# Install the latest stable release
-#  - stable
-os:
-  - linux
-sudo: false
-addons:
-  apt:
-    # Flutter depends on /usr/lib/x86_64-linux-gnu/libstdc++.so.6 version GLIBCXX_3.4.18
-    sources:
-      - ubuntu-toolchain-r-test # if we don't specify this, the libstdc++6 we get is the wrong version
-    packages:
-      - libstdc++6
-      - fonts-droid
-before_script:
-  - git clone https://github.com/flutter/flutter.git -b beta
-  - ./flutter/bin/flutter doctor
-script:
-  - ./flutter/bin/flutter test
+matrix:
+  # This causes the build to complete immediately upon first failure or once
+  # required jobs are green.
+  fast_finish: true
+
+  # Building APK/IPA takes a long time; do not wait for them to finish.
+  allow_failures:
+    - env: JOB=APK
+    # - env: JOB=IPA for now, we only want the apk
+
+  include:
+   # Runs unit tests without emulators.
+    - env: JOB=PR
+      os: linux
+      language: generic
+      sudo: false
+      addons:
+        apt:
+          # Flutter depends on /usr/lib/x86_64-linux-gnu/libstdc++.so.6 version GLIBCXX_3.4.18
+          sources:
+            - ubuntu-toolchain-r-test # if we don't specify this, the libstdc++6 we get is the wrong version
+          packages:
+            - libstdc++6
+            - fonts-droid
+      before_script:
+        - git clone https://github.com/flutter/flutter.git -b beta
+        - ./flutter/bin/flutter doctor
+        - gem install coveralls-lcov
+      script:
+        - ./flutter/bin/flutter test --coverage test/widget_tests/*
+      after_success:
+        - coveralls-lcov coverage/lcov.info
+
+    # Builds an APK
+    - if: (branch = master) OR (branch = development)
+      env:
+        - JOB=APK
+        - ANDROID_HOME=$HOME/android-sdk
+      os:
+        - linux
+      sudo: false
+      language: android
+      jdk: oraclejdk8
+      before_cache:
+        # Do not cache a few Gradle files/directories (see https://docs.travis-ci.com/user/languages/java/#Caching)
+        - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+        - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+
+      install:
+        # Download and unzip the Android SDK tools (if not already there thanks to the cache mechanism)
+        # Latest version available here: https://developer.android.com/studio/#command-tools
+        - if test ! -e $HOME/android-sdk-dl/sdk-tools.zip ; then curl https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip > $HOME/android-sdk-dl/sdk-tools.zip ; fi
+        - unzip -qq -n $HOME/android-sdk-dl/sdk-tools.zip -d $HOME/android-sdk
+
+        # Install or update Android SDK components (will not do anything if already up to date thanks to the cache mechanism)
+        - echo y | $HOME/android-sdk/tools/bin/sdkmanager 'tools' > /dev/null
+        - echo y | $HOME/android-sdk/tools/bin/sdkmanager 'platform-tools' > /dev/null
+        - echo y | $HOME/android-sdk/tools/bin/sdkmanager 'build-tools;27.0.3' > /dev/null
+        - echo y | $HOME/android-sdk/tools/bin/sdkmanager 'platforms;android-27' > /dev/null
+        - echo y | $HOME/android-sdk/tools/bin/sdkmanager 'extras;google;m2repository' > /dev/null
+
+      addons:
+        apt:
+          # Flutter depends on /usr/lib/x86_64-linux-gnu/libstdc++.so.6 version GLIBCXX_3.4.18
+          sources:
+            - ubuntu-toolchain-r-test # if we don't specify this, the libstdc++6 we get is the wrong version
+          packages:
+            - libstdc++6
+            - fonts-droid
+      before_script:
+        #Prepare pre-accepted licenses to not be prompted at installation
+        #- mkdir -p "$ANDROID_HOME/licenses"
+        #- cp ./google_licenses/* "$ANDROID_HOME/licenses/"
+        - git clone https://github.com/flutter/flutter.git -b beta
+        - export PATH=./flutter/bin:$PATH
+      script:
+        - ./flutter/bin/flutter -v build apk
+
+    # Builds an IPA.
+    #- env: JOB=IPA
+    #  os: osx
+    #  language: generic
+    #  osx_image: xcode8.3
+    #  before_script:
+    #    - pip install six
+    #    - brew update
+    #    - brew install --HEAD libimobiledevice
+    #    - brew install ideviceinstaller
+    #    - brew install ios-deploy
+    #    - git clone https://github.com/flutter/flutter.git -b beta
+    #  script:
+    #    - ./flutter/bin/flutter -v build ios --no-codesign
+
 cache:
   directories:
+    # Android SDK
+    - $HOME/android-sdk-dl
+    - $HOME/android-sdk
+
+    # Gradle Dependencies
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+
+    # Android build cache (see http://tools.android.com/tech-docs/build-cache)
+    - $HOME/.android/build-cache
+
+    # Dart pubspec cache
     - $HOME/.pub-cache
