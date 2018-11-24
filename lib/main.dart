@@ -9,7 +9,8 @@ class ServiceApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FirebaseRepository.init(5);
+    debugPrint("Rendering ServiceApp");
+    FirebaseRepository.init(3);
     return MaterialApp(
       title: 'Service App',
       theme: new ThemeData(

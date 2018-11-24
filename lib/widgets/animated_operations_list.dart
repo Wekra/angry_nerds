@@ -39,8 +39,7 @@ class AnimatedOperationsList<T> extends StatefulWidget {
   /// removes an item immediately.
   final AnimatedOperationsListItemBuilder<T> itemBuilder;
 
-  /// A widget to display while the query is loading. Defaults to an empty
-  /// Container().
+  /// A widget to display while the query is loading.
   final Widget loadingWidget;
 
   /// The axis along which the scroll view scrolls.
@@ -138,7 +137,11 @@ class AnimatedOperationsListState<T> extends State<AnimatedOperationsList<T>> {
   }
 
   void _handleOperation(ListOperation<T> operation) {
-    if (operation is InsertOperation<T>) {
+    if (operation is ListConnectedEvent<T>) {
+      setState(() {
+        _loaded = true;
+      });
+    } else if (operation is InsertOperation<T>) {
       _items.insert(operation.index, operation.item);
       _animatedListKey.currentState.insertItem(operation.index, duration: widget.duration);
     } else if (operation is DeleteOperation<T>) {
@@ -163,7 +166,7 @@ class AnimatedOperationsListState<T> extends State<AnimatedOperationsList<T>> {
   @override
   Widget build(BuildContext context) {
     if (!_loaded) {
-      return widget.loadingWidget ?? Container();
+      return widget.loadingWidget ?? Center(child: CircularProgressIndicator());
     }
     return AnimatedList(
       key: _animatedListKey,

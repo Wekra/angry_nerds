@@ -2,6 +2,9 @@ abstract class ListOperation<T> {
   const ListOperation();
 }
 
+class ListConnectedEvent<T> extends ListOperation<T> {
+}
+
 class InsertOperation<T> extends ListOperation<T> {
   final int index;
   final T item;

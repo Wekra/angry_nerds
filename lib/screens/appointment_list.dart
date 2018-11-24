@@ -1,4 +1,3 @@
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:service_app/data/firebase_repository.dart';
 import 'package:service_app/data/model/appointment.dart';
@@ -18,6 +17,7 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
   /// Builds the service appointment page
   @override
   Widget build(BuildContext context) {
+    debugPrint("Building AppointmentListPage state");
     return new Scaffold(
       appBar: AppBar(
         title: Text('Appointments'),
@@ -44,11 +44,5 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
       title: Text(appointment.description),
       subtitle: Text(appointment.scheduledStartTime.toString()),
     );
-  }
-
-  /// Database error handler
-  void _onDBError(Object o) {
-    final DatabaseError error = o;
-    print('Error: ${error.code} ${error.message}');
   }
 }
