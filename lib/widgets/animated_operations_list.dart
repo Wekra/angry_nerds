@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:service_app/util/list_operation_stream.dart';
+import 'package:service_app/util/list_operations.dart';
 
 typedef Widget AnimatedOperationsListItemBuilder<T>(
     BuildContext context, T item, Animation<double> animation, int index);
@@ -138,13 +138,12 @@ class AnimatedOperationsListState<T> extends State<AnimatedOperationsList<T>> {
   }
 
   void _handleOperation(ListOperation<T> operation) {
-    _loaded = true;
     if (operation is InsertOperation<T>) {
       _items.insert(operation.index, operation.item);
-      _animatedListKey.currentState?.insertItem(operation.index, duration: widget.duration);
+      _animatedListKey.currentState.insertItem(operation.index, duration: widget.duration);
     } else if (operation is DeleteOperation<T>) {
       _items.removeAt(operation.index);
-      _animatedListKey.currentState?.removeItem(
+      _animatedListKey.currentState.removeItem(
         operation.index,
         (BuildContext context, Animation<double> animation) =>
             widget.itemBuilder(context, operation.item, animation, operation.index),

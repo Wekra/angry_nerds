@@ -4,6 +4,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:quiver/core.dart';
 import 'package:service_app/data/model/appointment.dart';
 import 'package:service_app/util/list_operation_stream.dart';
+import 'package:service_app/util/list_operations.dart';
 
 class FirebaseRepository {
   static FirebaseRepository _instance;

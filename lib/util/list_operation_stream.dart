@@ -3,8 +3,16 @@ import 'dart:async';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/utils/stream_subscriber_mixin.dart';
 import 'package:quiver/core.dart';
+import 'package:service_app/util/list_operations.dart';
 
 typedef Future<Optional<T>> SnapshotMapper<T>(DataSnapshot snapshot);
+
+class DatabaseNode<T> {
+  final DataSnapshot snapshot;
+  final T item;
+
+  const DatabaseNode(this.snapshot, this.item);
+}
 
 class FirebaseQueryOperationStreamBuilder<T> with StreamSubscriberMixin<Event> {
   final Query query;
@@ -82,44 +90,4 @@ class FirebaseQueryOperationStreamBuilder<T> with StreamSubscriberMixin<Event> {
   void _onError(Object o) {
     // TODO Handle error
   }
-}
-
-class DatabaseNode<T> {
-  final DataSnapshot snapshot;
-  final T item;
-
-  const DatabaseNode(this.snapshot, this.item);
-}
-
-abstract class ListOperation<T> {
-  const ListOperation();
-}
-
-class InsertOperation<T> extends ListOperation<T> {
-  final int index;
-  final T item;
-
-  const InsertOperation(this.index, this.item);
-}
-
-class DeleteOperation<T> extends ListOperation<T> {
-  final int index;
-  final T item;
-
-  DeleteOperation(this.index, this.item);
-}
-
-class UpdateOperation<T> extends ListOperation<T> {
-  final int index;
-  final T newItem;
-
-  const UpdateOperation(this.index, this.newItem);
-}
-
-class MoveOperation<T> extends ListOperation<T> {
-  final int fromIndex;
-  final int toIndex;
-  final T item;
-
-  const MoveOperation(this.fromIndex, this.toIndex, this.item);
 }
