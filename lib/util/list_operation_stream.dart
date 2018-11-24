@@ -3,19 +3,13 @@ import 'dart:async';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/utils/stream_subscriber_mixin.dart';
 import 'package:quiver/core.dart';
+import 'package:service_app/util/identifiable.dart';
 import 'package:service_app/util/list_operations.dart';
 
-typedef T JsonMapper<T>(String id, Map<dynamic, dynamic> map);
+typedef T JsonMapper<T extends Identifiable>(String id, Map<dynamic, dynamic> map);
 
-class DatabaseNode<T> {
-  final String id;
-  final T item;
-
-  const DatabaseNode(this.id, this.item);
-}
-
-class FirebaseQueryOperationStreamBuilder<T> with StreamSubscriberMixin<Event> {
-  final List<DatabaseNode<T>> _items = new List();
+class FirebaseQueryOperationStreamBuilder<T extends Identifiable> with StreamSubscriberMixin<Event> {
+  final List<T> _items = new List();
   final StreamController<ListOperation<T>> _controller = new StreamController();
   bool _connectedEventDispatched = false;
 
@@ -50,10 +44,10 @@ class FirebaseQueryOperationStreamBuilder<T> with StreamSubscriberMixin<Event> {
     final String id = event.snapshot.key;
     final DatabaseReference child = itemDetailQuery.reference().child(id);
     child.once().then((DataSnapshot snapshot) =>
-        _buildNode(snapshot).ifPresent((DatabaseNode<T> node) {
+        _buildItem(snapshot).ifPresent((T item) {
           final int index = _nextIndexForIdOrNull(event.previousSiblingKey) ?? 0;
-          _items.insert(index, node);
-          _controller.add(InsertOperation(index, node.item));
+          _items.insert(index, item);
+          _controller.add(InsertOperation(index, item));
         }));
   }
 
@@ -64,20 +58,20 @@ class FirebaseQueryOperationStreamBuilder<T> with StreamSubscriberMixin<Event> {
     if (index < 0) {
       print("Received ItemIdRemoved event for ID '$id' which does not exist in list");
     } else {
-      final DatabaseNode<T> node = _items.removeAt(index);
-      _controller.add(DeleteOperation(index, node.item));
+      final T item = _items.removeAt(index);
+      _controller.add(DeleteOperation(index, item));
     }
   }
 
   void _onItemChanged(Event event) {
     _notifyConnectedIfNecessary();
-    _buildNode(event.snapshot).ifPresent((DatabaseNode<T> node) {
-      final int index = _indexForIdOrNull(node.id) ?? -1;
+    _buildItem(event.snapshot).ifPresent((T item) {
+      final int index = _indexForIdOrNull(item.id) ?? -1;
       if (index < 0) {
-        print("Received ItemChanged event for ID '${node.id}' which does not exist in list");
+        print("Received ItemChanged event for ID '${item.id}' which does not exist in list");
       } else {
-        _items[index] = node;
-        _controller.add(UpdateOperation(index, node.item));
+        _items[index] = item;
+        _controller.add(UpdateOperation(index, item));
       }
     });
   }
@@ -91,9 +85,9 @@ class FirebaseQueryOperationStreamBuilder<T> with StreamSubscriberMixin<Event> {
     } else {
       final int toIndex = _nextIndexForIdOrNull(event.previousSiblingKey) ?? _items.length;
       if (fromIndex != toIndex) {
-        final DatabaseNode<T> node = _items.removeAt(fromIndex);
-        _items.insert(toIndex, node);
-        _controller.add(MoveOperation(fromIndex, toIndex, node.item));
+        final T item = _items.removeAt(fromIndex);
+        _items.insert(toIndex, item);
+        _controller.add(MoveOperation(fromIndex, toIndex, item));
       }
     }
   }
@@ -105,12 +99,12 @@ class FirebaseQueryOperationStreamBuilder<T> with StreamSubscriberMixin<Event> {
     }
   }
 
-  Optional<DatabaseNode<T>> _buildNode(DataSnapshot snapshot) {
+  Optional<T> _buildItem(DataSnapshot snapshot) {
     final String id = snapshot?.key;
     final Map<dynamic, dynamic> map = snapshot?.value;
     if (id != null && map != null) {
       final T item = itemDetailMapper(id, map);
-      return Optional.of(DatabaseNode<T>(id, item));
+      return Optional.of(item);
     }
     return Optional.absent();
   }

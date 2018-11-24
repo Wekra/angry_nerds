@@ -1,7 +1,11 @@
 import 'dart:convert';
 
-class Appointment {
+import 'package:service_app/util/identifiable.dart';
+
+class Appointment implements Identifiable {
+  @override
   final String id;
+
   final String description;
   final DateTime scheduledStartTime;
   final DateTime scheduledEndTime;
@@ -18,10 +22,10 @@ class Appointment {
         DateTime.parse(map["scheduledStartTime"]),
         DateTime.parse(map["scheduledEndTime"]),
         DateTime.parse(map["creationTime"]),
-        map.containsKey("intervals") ? (map["intervals"] as List<String>).map(AppointmentInterval.fromJson) : []
-    );
+        map.containsKey("intervals") ? (map["intervals"] as List<String>).map(AppointmentInterval.fromJson) : []);
   }
 
+  @override
   Map<dynamic, dynamic> toJsonMap() {
     return {
       "description": description,
