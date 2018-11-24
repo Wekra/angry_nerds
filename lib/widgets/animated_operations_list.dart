@@ -142,25 +142,32 @@ class AnimatedOperationsListState<T> extends State<AnimatedOperationsList<T>> {
         _loaded = true;
       });
     } else if (operation is InsertOperation<T>) {
-      _items.insert(operation.index, operation.item);
-      _animatedListKey.currentState.insertItem(operation.index, duration: widget.duration);
+      _insertItem(operation.index, operation.item);
     } else if (operation is DeleteOperation<T>) {
-      _items.removeAt(operation.index);
-      _animatedListKey.currentState.removeItem(
-        operation.index,
-        (BuildContext context, Animation<double> animation) =>
-            widget.itemBuilder(context, operation.item, animation, operation.index),
-        duration: widget.duration,
-      );
+      _removeItem(operation.index);
     } else if (operation is UpdateOperation<T>) {
-      // No animation, just update contents
-      setState(() {});
+      _items[operation.index] = operation.newItem;
+      setState(() {}); // No animation, just update contents
     } else if (operation is MoveOperation<T>) {
-      // No animation, just update contents
-      setState(() {});
+      _removeItem(operation.fromIndex);
+      _insertItem(operation.toIndex, operation.item);
     } else {
       throw UnimplementedError();
     }
+  }
+
+  void _insertItem(int index, T item) {
+    _items.insert(index, item);
+    _animatedListKey.currentState.insertItem(index, duration: widget.duration);
+  }
+
+  void _removeItem(int index) {
+    T item = _items.removeAt(index);
+    _animatedListKey.currentState.removeItem(
+      index,
+          (BuildContext context, Animation<double> animation) => widget.itemBuilder(context, item, animation, index),
+      duration: widget.duration,
+    );
   }
 
   @override

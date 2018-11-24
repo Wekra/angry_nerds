@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:firebase_database/firebase_database.dart';
-import 'package:quiver/core.dart';
 import 'package:service_app/data/model/appointment.dart';
 import 'package:service_app/util/list_operation_stream.dart';
 import 'package:service_app/util/list_operations.dart';
@@ -24,15 +23,10 @@ class FirebaseRepository {
   // -------------------- Appointments
 
   Stream<ListOperation<Appointment>> getAppointmentsOfTechnician() {
-    Query query = _databaseReference.child("technicians/$technicianId/appointments");
-    return FirebaseQueryOperationStreamBuilder(query, (DataSnapshot snapshot) => _getAppointment(snapshot.key)).stream;
-  }
-
-  Future<Optional<Appointment>> _getAppointment(String id) {
-    return _databaseReference.child("appointments/$id").once().then((DataSnapshot snapshot) {
-      if (snapshot?.value == null) return Optional.absent();
-      return Optional.of(Appointment.fromJsonMap(snapshot.key, snapshot.value));
-    });
+    Query appointmentIdsQuery = _databaseReference.child("technicians/$technicianId/appointments");
+    Query appointmentDetailQuery = _databaseReference.child("appointments");
+    return FirebaseQueryOperationStreamBuilder(appointmentIdsQuery, appointmentDetailQuery, Appointment.fromJsonMap)
+        .stream;
   }
 
   Future<void> createAppointmentForTechnician(Appointment newAppointment) {
