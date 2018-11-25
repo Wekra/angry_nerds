@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:service_app/data/firebase_repository.dart';
 import 'package:service_app/data/model/appointment.dart';
+import 'package:service_app/screens/appointment_detail.dart';
 import 'package:service_app/widgets/animated_operations_list.dart';
 
 import '../widgets/navigation_drawer.dart';
@@ -31,18 +32,22 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
           child: new Icon(Icons.add),
           onPressed: () =>
               FirebaseRepository.instance.createAppointmentForTechnician(
-                  new Appointment("abc", "Desc", DateTime.now(), DateTime.now(), DateTime.now(), [])
+                  new Appointment("Desc", DateTime.now(), DateTime.now(), DateTime.now(), [])
               )
       ),
       drawer: NavDrawer(),
     );
   }
 
-  /// Builds the list-item widget
   Widget _buildListItem(BuildContext context, Appointment appointment, Animation<double> animation, int index) {
     return ListTile(
       title: Text(appointment.description),
       subtitle: Text(appointment.scheduledStartTime.toString()),
+        onTap: () =>
+            Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AppointmentDetailPage(appointment))
+            )
     );
   }
 }

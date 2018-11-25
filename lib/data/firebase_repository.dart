@@ -23,20 +23,26 @@ class FirebaseRepository {
   // -------------------- Appointments
 
   Stream<ListOperation<Appointment>> getAppointmentsOfTechnician() {
-    Query appointmentIdsQuery = _databaseReference.child("technicians/$technicianId/appointments");
-    Query appointmentDetailQuery = _databaseReference.child("appointments");
-    return FirebaseQueryOperationStreamBuilder(appointmentIdsQuery, appointmentDetailQuery, Appointment.fromJsonMap)
-        .stream;
+    Query idsQuery = _databaseReference.child("technicians/$technicianId/appointments");
+    Query detailQuery = _databaseReference.child("appointments");
+    return FirebaseQueryOperationStreamBuilder(idsQuery, detailQuery, Appointment.fromJsonMap).stream;
+  }
+
+  Stream<ListOperation<AppointmentInterval>> getIntervalsOfAppointment(String appointmentId) {
+    Query itemQuery = _databaseReference.child("appointments/$appointmentId/intervals");
+    return SingleCollectionOperationStreamBuilder(itemQuery, AppointmentInterval.fromJsonMap).stream;
   }
 
   Future<void> createAppointmentForTechnician(Appointment newAppointment) {
-    return _databaseReference.child("appointments/${newAppointment.id}").set(newAppointment.toJsonMap()).then(
+    return _createOrUpdateAppointment(newAppointment).then(
         (unused) => _databaseReference.child("technicians/$technicianId/appointments/${newAppointment.id}").set(true));
   }
 
-  Future<void> addAppointmentInterval(int appointmentId, AppointmentInterval newInterval) {
-    return _databaseReference
-        .child("appointment/$technicianId/appointments/$appointmentId/intervals")
-        .set(newInterval.toJsonMap());
+  Future<void> _createOrUpdateAppointment(Appointment newAppointment) {
+    return _databaseReference.child("appointments/${newAppointment.id}").set(newAppointment.toJsonMap());
+  }
+
+  Future<void> addAppointmentInterval(String appointmentId, AppointmentInterval newInterval) {
+    return _databaseReference.child("appointments/$appointmentId/intervals").push().set(newInterval.toJsonMap());
   }
 }

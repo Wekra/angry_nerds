@@ -1,44 +1,84 @@
-//import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:service_app/data/firebase_repository.dart';
+import 'package:service_app/data/model/appointment.dart';
+import 'package:service_app/widgets/animated_operations_list.dart';
 
-class AppointmentPage extends StatefulWidget{
+class AppointmentDetailPage extends StatefulWidget {
+  final Appointment appointment;
 
-  final appointmentKey;
-
-  AppointmentPage(this.appointmentKey);
+  const AppointmentDetailPage(this.appointment);
 
   @override
-  _AppointmentPageState createState() {
-    return _AppointmentPageState();
+  _AppointmentDetailPageState createState() {
+    return _AppointmentDetailPageState();
   }
 }
 
-class _AppointmentPageState extends State<AppointmentPage> {
-
-//  TODO sync the appointment from Firebase
-//  DatabaseReference _appointmentRef;
-  String appointmentKey;
+class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
+  Appointment appointment;
+  DateTime measurementStart;
 
   @override
   void initState() {
-    appointmentKey = widget.appointmentKey;
     super.initState();
+    appointment = widget.appointment;
   }
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: AppBar(
-        /// TODO pass Customer
-        title: Text('Service Appointment'),
+        title: Text("Appointment details"),
       ),
-      body: _buildAppointmentDetail(),
+      body: Column(
+        children: <Widget>[
+          Text("Description: ${appointment.description}"),
+          Text("Creation time: ${appointment.creationTime}"),
+          Text("Scheduled start time: ${appointment.scheduledStartTime}"),
+          Text("Scheduled end time: ${appointment.scheduledEndTime}"),
+          Text("Intervals:"),
+          Expanded(
+            child: AnimatedOperationsList(
+              stream: FirebaseRepository.instance.getIntervalsOfAppointment(appointment.id),
+              itemBuilder: _buildIntervalWidget,
+              shrinkWrap: true,
+            ),
+          )
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+          child: new Icon(measurementStart != null ? Icons.stop : Icons.play_arrow),
+          onPressed: () {
+            if (measurementStart != null) {
+              _finishMeasurement();
+            } else {
+              _startMeasurement();
+            }
+          }),
     );
   }
 
-  Widget _buildAppointmentDetail() {
-    return Center(child: Text('Apppointment Detail: ${appointmentKey}'));
+  Widget _buildIntervalWidget(BuildContext context, AppointmentInterval interval, Animation<double> animation,
+      int index) {
+    return ListTile(
+      title: Text("Start: ${interval.startTime}"),
+      subtitle: Text("End: ${interval.endTime}"),
+    );
+  }
+
+  void _startMeasurement() {
+    setState(() {
+      measurementStart = DateTime.now();
+    });
+  }
+
+  void _finishMeasurement() {
+    DateTime measurementEnd = DateTime.now();
+    AppointmentInterval interval = new AppointmentInterval(measurementStart, measurementEnd);
+    FirebaseRepository.instance.addAppointmentInterval(appointment.id, interval).then((unused) {
+      setState(() {
+        measurementStart = null;
+      });
+    });
   }
 }
-
-
