@@ -19,17 +19,17 @@ class DeleteOperation<T> extends ListOperation<T> {
   DeleteOperation(this.index, this.item);
 }
 
-class UpdateOperation<T> extends ListOperation<T> {
-  final int index;
-  final T newItem;
-
-  const UpdateOperation(this.index, this.newItem);
-}
-
 class MoveOperation<T> extends ListOperation<T> {
   final int fromIndex;
   final int toIndex;
   final T item;
 
   const MoveOperation(this.fromIndex, this.toIndex, this.item);
+}
+
+class UpdateOperation<T> extends ListOperation<T> {
+  final int index;
+  final T newItem;
+
+  const UpdateOperation(this.index, this.newItem);
 }

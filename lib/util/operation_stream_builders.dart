@@ -1,0 +1,217 @@
+import 'dart:async';
+
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_database/ui/utils/stream_subscriber_mixin.dart';
+import 'package:meta/meta.dart';
+import 'package:quiver/core.dart';
+import 'package:service_app/util/identifiable.dart';
+import 'package:service_app/util/list_operations.dart';
+
+typedef T JsonMapper<T extends Identifiable>(String id, Map<dynamic, dynamic> map);
+
+/// Base class for helpers to create [Stream]s of [ListOperation]s that are applied to the given Firebase collections.
+/// This is useful to create list widgets that reflect the current items of a Firebase collection in real time.
+abstract class BaseOperationStreamBuilder<T extends Identifiable> with StreamSubscriberMixin<Event> {
+  final List<T> _items = new List();
+  final StreamController<ListOperation<T>> _controller = new StreamController();
+  bool _connectedEventDispatched = false;
+
+  final JsonMapper<T> itemMapper;
+
+  Stream<ListOperation<T>> get stream => _controller.stream;
+
+  BaseOperationStreamBuilder(this.itemMapper) {
+    _controller.onCancel = cancelSubscriptions;
+    _controller.onListen = _listenToFirebaseEvents;
+  }
+
+  void _listenToFirebaseEvents();
+
+  @protected
+  void _onValue(Event event) {
+    // "event.snapshot.value" is null here if given query does not return any items
+    _notifyConnectedIfNecessary();
+  }
+
+  @protected
+  void _notifyConnectedIfNecessary() {
+    if (!_connectedEventDispatched) {
+      _connectedEventDispatched = true;
+      _controller.add(new ListConnectedEvent());
+    }
+  }
+
+  @protected
+  Optional<T> _buildItem(DataSnapshot snapshot) {
+    final String id = snapshot?.key;
+    final Map<dynamic, dynamic> map = snapshot?.value;
+    if (id != null && map != null) {
+      final T item = itemMapper(id, map);
+      return Optional.of(item);
+    }
+    return Optional.absent();
+  }
+
+  @protected
+  int _nextIndexForIdOrNull(String id) {
+    final int index = _indexForIdOrNull(id);
+    return index != null ? index + 1 : null;
+  }
+
+  @protected
+  int _indexForIdOrNull(String id) {
+    if (id != null) {
+      for (int index = 0; index < _items.length; index++) {
+        if (id == _items[index].id) {
+          return index;
+        }
+      }
+    }
+    return null;
+  }
+
+  @protected
+  void _handleError(Object object) {
+    if (object is DatabaseError) {
+      print("DatabaseError ${object.code} [${object.message}]: ${object.details}");
+    } else {
+      print("Unknown error: ${object.toString()}");
+    }
+  }
+}
+
+class ForeignKeyCollectionOperationStreamBuilder<T extends Identifiable> extends BaseOperationStreamBuilder<T> {
+  final Query itemIdsQuery;
+  final Query itemDetailQuery;
+
+  ForeignKeyCollectionOperationStreamBuilder(JsonMapper<T> itemMapper, this.itemIdsQuery, this.itemDetailQuery)
+      : super(itemMapper);
+
+  @override
+  void _listenToFirebaseEvents() {
+    listen(itemIdsQuery.onValue, _onValue, onError: _handleError);
+    listen(itemIdsQuery.onChildAdded, _onItemIdAdded, onError: _handleError);
+    listen(itemIdsQuery.onChildRemoved, _onItemIdRemoved, onError: _handleError);
+    listen(itemIdsQuery.onChildMoved, _onItemIdMoved, onError: _handleError);
+
+    listen(itemDetailQuery.onValue, _onValue, onError: _handleError);
+    listen(itemDetailQuery.onChildChanged, _onItemChanged, onError: _handleError);
+  }
+
+  void _onItemIdAdded(Event event) {
+    _notifyConnectedIfNecessary();
+    final String id = event.snapshot.key;
+    final DatabaseReference child = itemDetailQuery.reference().child(id);
+    child.once().then((DataSnapshot snapshot) =>
+        _buildItem(snapshot).ifPresent((T item) {
+          final int index = _nextIndexForIdOrNull(event.previousSiblingKey) ?? 0;
+          _items.insert(index, item);
+          _controller.add(InsertOperation(index, item));
+        }));
+  }
+
+  void _onItemIdRemoved(Event event) {
+    _notifyConnectedIfNecessary();
+    final String id = event.snapshot.key;
+    final int index = _indexForIdOrNull(id) ?? -1;
+    if (index < 0) {
+      print("Received ItemIdRemoved event for ID '$id' which does not exist in list");
+    } else {
+      final T item = _items.removeAt(index);
+      _controller.add(DeleteOperation(index, item));
+    }
+  }
+
+  void _onItemIdMoved(Event event) {
+    _notifyConnectedIfNecessary();
+    final String id = event.snapshot.key;
+    final int fromIndex = _indexForIdOrNull(id) ?? -1;
+    if (fromIndex < 0) {
+      print("Received ItemIdMoved event for ID '$id' which does not exist in list");
+    } else {
+      final int toIndex = _nextIndexForIdOrNull(event.previousSiblingKey) ?? _items.length;
+      if (fromIndex != toIndex) {
+        final T item = _items.removeAt(fromIndex);
+        _items.insert(toIndex, item);
+        _controller.add(MoveOperation(fromIndex, toIndex, item));
+      }
+    }
+  }
+
+  void _onItemChanged(Event event) {
+    _notifyConnectedIfNecessary();
+    _buildItem(event.snapshot).ifPresent((T item) {
+      final int index = _indexForIdOrNull(item.id) ?? -1;
+      if (index < 0) {
+        print("Received ItemChanged event for ID '${item.id}' which does not exist in list");
+      } else {
+        _items[index] = item;
+        _controller.add(UpdateOperation(index, item));
+      }
+    });
+  }
+}
+
+class SingleCollectionOperationStreamBuilder<T extends Identifiable> extends BaseOperationStreamBuilder<T> {
+  final Query itemQuery;
+
+  SingleCollectionOperationStreamBuilder(JsonMapper<T> itemMapper, this.itemQuery) : super(itemMapper);
+
+  @override
+  void _listenToFirebaseEvents() {
+    listen(itemQuery.onValue, _onValue, onError: _handleError);
+    listen(itemQuery.onChildAdded, _onItemAdded, onError: _handleError);
+    listen(itemQuery.onChildRemoved, _onItemRemoved, onError: _handleError);
+    listen(itemQuery.onChildMoved, _onItemMoved, onError: _handleError);
+    listen(itemQuery.onChildChanged, _onItemChanged, onError: _handleError);
+  }
+
+  void _onItemAdded(Event event) {
+    _buildItem(event.snapshot).ifPresent((T item) {
+      final int index = _nextIndexForIdOrNull(event.previousSiblingKey) ?? 0;
+      _items.insert(index, item);
+      _controller.add(InsertOperation(index, item));
+    });
+  }
+
+  void _onItemRemoved(Event event) {
+    _notifyConnectedIfNecessary();
+    final String id = event.snapshot.key;
+    final int index = _indexForIdOrNull(id) ?? -1;
+    if (index < 0) {
+      print("Received ItemIdRemoved event for ID '$id' which does not exist in list");
+    } else {
+      final T item = _items.removeAt(index);
+      _controller.add(DeleteOperation(index, item));
+    }
+  }
+
+  void _onItemMoved(Event event) {
+    _notifyConnectedIfNecessary();
+    final String id = event.snapshot.key;
+    final int fromIndex = _indexForIdOrNull(id) ?? -1;
+    if (fromIndex < 0) {
+      print("Received ItemIdMoved event for ID '$id' which does not exist in list");
+    } else {
+      final int toIndex = _nextIndexForIdOrNull(event.previousSiblingKey) ?? _items.length;
+      if (fromIndex != toIndex) {
+        final T item = _items.removeAt(fromIndex);
+        _items.insert(toIndex, item);
+        _controller.add(MoveOperation(fromIndex, toIndex, item));
+      }
+    }
+  }
+
+  void _onItemChanged(Event event) {
+    _notifyConnectedIfNecessary();
+    _buildItem(event.snapshot).ifPresent((T item) {
+      final int index = _indexForIdOrNull(item.id) ?? -1;
+      if (index < 0) {
+        print("Received ItemChanged event for ID '${item.id}' which does not exist in list");
+      } else {
+        _items[index] = item;
+        _controller.add(UpdateOperation(index, item));
+      }
+    });
+  }
+}

@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:service_app/data/model/appointment.dart';
-import 'package:service_app/util/list_operation_stream.dart';
 import 'package:service_app/util/list_operations.dart';
+import 'package:service_app/util/operation_stream_builders.dart';
 
 class FirebaseRepository {
   static FirebaseRepository _instance;
@@ -25,12 +25,12 @@ class FirebaseRepository {
   Stream<ListOperation<Appointment>> getAppointmentsOfTechnician() {
     Query idsQuery = _databaseReference.child("technicians/$technicianId/appointments");
     Query detailQuery = _databaseReference.child("appointments");
-    return FirebaseQueryOperationStreamBuilder(idsQuery, detailQuery, Appointment.fromJsonMap).stream;
+    return ForeignKeyCollectionOperationStreamBuilder(Appointment.fromJsonMap, idsQuery, detailQuery).stream;
   }
 
   Stream<ListOperation<AppointmentInterval>> getIntervalsOfAppointment(String appointmentId) {
     Query itemQuery = _databaseReference.child("appointments/$appointmentId/intervals");
-    return SingleCollectionOperationStreamBuilder(itemQuery, AppointmentInterval.fromJsonMap).stream;
+    return SingleCollectionOperationStreamBuilder(AppointmentInterval.fromJsonMap, itemQuery).stream;
   }
 
   Future<void> createAppointmentForTechnician(Appointment newAppointment) {

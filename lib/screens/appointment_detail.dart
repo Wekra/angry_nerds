@@ -40,8 +40,7 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
           Expanded(
             child: AnimatedOperationsList(
               stream: FirebaseRepository.instance.getIntervalsOfAppointment(appointment.id),
-              itemBuilder: _buildIntervalWidget,
-              shrinkWrap: true,
+                itemBuilder: _buildIntervalWidget
             ),
           )
         ],
