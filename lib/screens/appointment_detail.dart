@@ -39,9 +39,8 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
           Text("Intervals:"),
           Expanded(
             child: AnimatedOperationsList(
-              stream: FirebaseRepository.instance.getIntervalsOfAppointment(appointment.id),
-                itemBuilder: _buildIntervalWidget
-            ),
+                stream: FirebaseRepository.instance.getIntervalsOfAppointment(appointment.id),
+                itemBuilder: _buildIntervalWidget),
           )
         ],
       ),
@@ -59,9 +58,12 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
 
   Widget _buildIntervalWidget(BuildContext context, AppointmentInterval interval, Animation<double> animation,
       int index) {
-    return ListTile(
-      title: Text("Start: ${interval.startTime}"),
-      subtitle: Text("End: ${interval.endTime}"),
+    return FadeTransition(
+      opacity: animation,
+      child: ListTile(
+        title: Text("Start: ${interval.startTime}"),
+        subtitle: Text("End: ${interval.endTime}"),
+      ),
     );
   }
 

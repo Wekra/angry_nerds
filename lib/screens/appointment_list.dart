@@ -24,30 +24,25 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
         title: Text('Appointments'),
       ),
       body: AnimatedOperationsList(
-          stream: FirebaseRepository.instance.getAppointmentsOfTechnician(),
-          itemBuilder: _buildListItem
-      ),
+          stream: FirebaseRepository.instance.getAppointmentsOfTechnician(), itemBuilder: _buildListItem),
       floatingActionButton: new FloatingActionButton(
           elevation: 0.0,
           child: new Icon(Icons.add),
           onPressed: () =>
               FirebaseRepository.instance.createAppointmentForTechnician(
-                  new Appointment("Desc", DateTime.now(), DateTime.now(), DateTime.now(), [])
-              )
-      ),
+                  new Appointment("Desc", DateTime.now(), DateTime.now(), DateTime.now(), []))),
       drawer: NavDrawer(),
     );
   }
 
   Widget _buildListItem(BuildContext context, Appointment appointment, Animation<double> animation, int index) {
-    return ListTile(
-      title: Text(appointment.description),
-      subtitle: Text(appointment.scheduledStartTime.toString()),
-        onTap: () =>
-            Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => AppointmentDetailPage(appointment))
-            )
+    return FadeTransition(
+      opacity: animation,
+      child: ListTile(
+          title: Text(appointment.description),
+          subtitle: Text(appointment.scheduledStartTime.toString()),
+          onTap: () =>
+              Navigator.push(context, MaterialPageRoute(builder: (context) => AppointmentDetailPage(appointment)))),
     );
   }
 }

@@ -14,7 +14,7 @@ typedef T JsonMapper<T extends Identifiable>(String id, Map<dynamic, dynamic> ma
 abstract class BaseOperationStreamBuilder<T extends Identifiable> with StreamSubscriberMixin<Event> {
   final List<T> _items = new List();
   final StreamController<ListOperation<T>> _controller = new StreamController();
-  bool _connectedEventDispatched = false;
+  bool _loadedEventDispatched = false;
 
   final JsonMapper<T> itemMapper;
 
@@ -27,17 +27,14 @@ abstract class BaseOperationStreamBuilder<T extends Identifiable> with StreamSub
 
   void _listenToFirebaseEvents();
 
+  /// This method should be set as "onValue" listener after all other listeners have been set.
   @protected
   void _onValue(Event event) {
-    // "event.snapshot.value" is null here if given query does not return any items
-    _notifyConnectedIfNecessary();
-  }
-
-  @protected
-  void _notifyConnectedIfNecessary() {
-    if (!_connectedEventDispatched) {
-      _connectedEventDispatched = true;
-      _controller.add(new ListConnectedEvent());
+    // This method is triggered after all initial insert operations have been emitted.
+    // "event.snapshot.value" is null here if given query does not return any items.
+    if (!_loadedEventDispatched) {
+      _loadedEventDispatched = true;
+      _controller.add(new ListLoadedEvent());
     }
   }
 
@@ -89,17 +86,15 @@ class ForeignKeyCollectionOperationStreamBuilder<T extends Identifiable> extends
 
   @override
   void _listenToFirebaseEvents() {
-    listen(itemIdsQuery.onValue, _onValue, onError: _handleError);
     listen(itemIdsQuery.onChildAdded, _onItemIdAdded, onError: _handleError);
     listen(itemIdsQuery.onChildRemoved, _onItemIdRemoved, onError: _handleError);
     listen(itemIdsQuery.onChildMoved, _onItemIdMoved, onError: _handleError);
+    listen(itemIdsQuery.onValue, _onValue, onError: _handleError);
 
-    listen(itemDetailQuery.onValue, _onValue, onError: _handleError);
     listen(itemDetailQuery.onChildChanged, _onItemChanged, onError: _handleError);
   }
 
   void _onItemIdAdded(Event event) {
-    _notifyConnectedIfNecessary();
     final String id = event.snapshot.key;
     final DatabaseReference child = itemDetailQuery.reference().child(id);
     child.once().then((DataSnapshot snapshot) =>
@@ -111,7 +106,6 @@ class ForeignKeyCollectionOperationStreamBuilder<T extends Identifiable> extends
   }
 
   void _onItemIdRemoved(Event event) {
-    _notifyConnectedIfNecessary();
     final String id = event.snapshot.key;
     final int index = _indexForIdOrNull(id) ?? -1;
     if (index < 0) {
@@ -123,7 +117,6 @@ class ForeignKeyCollectionOperationStreamBuilder<T extends Identifiable> extends
   }
 
   void _onItemIdMoved(Event event) {
-    _notifyConnectedIfNecessary();
     final String id = event.snapshot.key;
     final int fromIndex = _indexForIdOrNull(id) ?? -1;
     if (fromIndex < 0) {
@@ -139,7 +132,6 @@ class ForeignKeyCollectionOperationStreamBuilder<T extends Identifiable> extends
   }
 
   void _onItemChanged(Event event) {
-    _notifyConnectedIfNecessary();
     _buildItem(event.snapshot).ifPresent((T item) {
       final int index = _indexForIdOrNull(item.id) ?? -1;
       if (index < 0) {
@@ -159,11 +151,11 @@ class SingleCollectionOperationStreamBuilder<T extends Identifiable> extends Bas
 
   @override
   void _listenToFirebaseEvents() {
-    listen(itemQuery.onValue, _onValue, onError: _handleError);
     listen(itemQuery.onChildAdded, _onItemAdded, onError: _handleError);
     listen(itemQuery.onChildRemoved, _onItemRemoved, onError: _handleError);
     listen(itemQuery.onChildMoved, _onItemMoved, onError: _handleError);
     listen(itemQuery.onChildChanged, _onItemChanged, onError: _handleError);
+    listen(itemQuery.onValue, _onValue, onError: _handleError);
   }
 
   void _onItemAdded(Event event) {
@@ -175,7 +167,6 @@ class SingleCollectionOperationStreamBuilder<T extends Identifiable> extends Bas
   }
 
   void _onItemRemoved(Event event) {
-    _notifyConnectedIfNecessary();
     final String id = event.snapshot.key;
     final int index = _indexForIdOrNull(id) ?? -1;
     if (index < 0) {
@@ -187,7 +178,6 @@ class SingleCollectionOperationStreamBuilder<T extends Identifiable> extends Bas
   }
 
   void _onItemMoved(Event event) {
-    _notifyConnectedIfNecessary();
     final String id = event.snapshot.key;
     final int fromIndex = _indexForIdOrNull(id) ?? -1;
     if (fromIndex < 0) {
@@ -203,7 +193,6 @@ class SingleCollectionOperationStreamBuilder<T extends Identifiable> extends Bas
   }
 
   void _onItemChanged(Event event) {
-    _notifyConnectedIfNecessary();
     _buildItem(event.snapshot).ifPresent((T item) {
       final int index = _indexForIdOrNull(item.id) ?? -1;
       if (index < 0) {

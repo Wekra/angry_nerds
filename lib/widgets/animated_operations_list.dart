@@ -114,14 +114,15 @@ class AnimatedOperationsList<T> extends StatefulWidget {
 }
 
 class AnimatedOperationsListState<T> extends State<AnimatedOperationsList<T>> {
-  final GlobalKey<AnimatedListState> _animatedListKey = GlobalKey();
+  final GlobalKey<AnimatedListState> _animatedListKey = GlobalKey<AnimatedListState>();
   final List<T> _items = new List();
   bool _loaded = false;
   StreamSubscription subscription;
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    disposeSubscription();
     subscription = widget.stream.listen(_handleOperation);
   }
 
@@ -137,7 +138,7 @@ class AnimatedOperationsListState<T> extends State<AnimatedOperationsList<T>> {
   }
 
   void _handleOperation(ListOperation<T> operation) {
-    if (operation is ListConnectedEvent<T>) {
+    if (operation is ListLoadedEvent<T>) {
       setState(() {
         _loaded = true;
       });
@@ -158,7 +159,10 @@ class AnimatedOperationsListState<T> extends State<AnimatedOperationsList<T>> {
 
   void _insertItem(int index, T item) {
     _items.insert(index, item);
-    _animatedListKey.currentState.insertItem(index, duration: widget.duration);
+    if (_loaded) {
+      // _animatedListKey.currentState is null if first render was not yet performed
+      _animatedListKey.currentState.insertItem(index, duration: widget.duration);
+    }
   }
 
   void _removeItem(int index) {
