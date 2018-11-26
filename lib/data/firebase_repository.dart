@@ -36,16 +36,16 @@ class FirebaseRepository {
   }
 
   Future<void> createNoteForTechnician(Note newNote) {
-    return createOrUpdateNote(newNote)
+    return _createOrUpdateNote(newNote)
         .then((unused) => _databaseReference.child("technicians/${technician.id}/notes/${newNote.id}").set(true));
   }
 
-  Future<void> createOrUpdateNote(Note newNote) {
+  Future<void> _createOrUpdateNote(Note newNote) {
     return _databaseReference.child("notes/${newNote.id}").set(newNote.toJsonMap());
   }
 
   Future<void> setNoteStatus(int noteId, NoteStatus status) {
-    return _databaseReference.child("technicians/${technician.id}/notes/$noteId/status").set(status.toString());
+    return _databaseReference.child("notes/$noteId/status").set(status.toString());
   }
 
   // -------------------- Warehouse orders
@@ -57,16 +57,17 @@ class FirebaseRepository {
   }
 
   Future<void> createOrderForTechnician(WarehouseOrder newOrder) {
-    return createOrUpdateOrder(newOrder)
+    return _createOrUpdateOrder(newOrder)
         .then((unused) => _databaseReference.child("technicians/${technician.id}/orders/${newOrder.id}").set(true));
   }
 
-  Future<void> createOrUpdateOrder(WarehouseOrder newOrder) {
+  Future<void> _createOrUpdateOrder(WarehouseOrder newOrder) {
     return _databaseReference.child("orders/${newOrder.id}").set(newOrder.toJsonMap());
   }
 
-  Future<void> markOrderAsDelivered(int orderId) {
-    return _databaseReference.child("orders/$orderId/status").set(WarehouseOrderStatus.delivered);
+  /// This method can be used to manually set the order status (as we don't have an order system)
+  Future<void> setOrderStatus(int orderId, WarehouseOrderStatus status) {
+    return _databaseReference.child("orders/$orderId/status").set(status.toString());
   }
 
   // -------------------- Customers
@@ -78,12 +79,12 @@ class FirebaseRepository {
   }
 
   Future<void> createCustomerForTechnician(Customer newCustomer) {
-    return createOrUpdateCustomer(newCustomer)
+    return _createOrUpdateCustomer(newCustomer)
         .then((unused) =>
         _databaseReference.child("technicians/${technician.id}/customers/${newCustomer.id}").set(true));
   }
 
-  Future<void> createOrUpdateCustomer(Customer newCustomer) {
+  Future<void> _createOrUpdateCustomer(Customer newCustomer) {
     return _databaseReference.child("customers/${newCustomer.id}").set(newCustomer.toJsonMap());
   }
 
@@ -115,9 +116,9 @@ class FirebaseRepository {
   }
 
   Future<void> createAppointmentForTechnician(Appointment newAppointment) {
-    return _createOrUpdateAppointment(newAppointment).then(
-            (unused) =>
-            _databaseReference.child("technicians/${technician.id}/appointments/${newAppointment.id}").set(true));
+    return _createOrUpdateAppointment(newAppointment)
+        .then((unused) =>
+        _databaseReference.child("technicians/${technician.id}/appointments/${newAppointment.id}").set(true));
   }
 
   Future<void> _createOrUpdateAppointment(Appointment newAppointment) {
@@ -125,6 +126,7 @@ class FirebaseRepository {
   }
 
   Future<void> addAppointmentInterval(String appointmentId, AppointmentInterval newInterval) {
-    return _databaseReference.child("appointments/$appointmentId/intervals").push().set(newInterval.toJsonMap());
+    return _databaseReference.child("appointments/$appointmentId/intervals/${newInterval.id}").set(
+        newInterval.toJsonMap());
   }
 }

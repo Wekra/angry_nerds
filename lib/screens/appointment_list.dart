@@ -13,15 +13,13 @@ class AppointmentListPage extends StatefulWidget {
   }
 }
 
-///Service home page renders the appointment list
 class _AppointmentListPageState extends State<AppointmentListPage> {
-  /// Builds the service appointment page
   @override
   Widget build(BuildContext context) {
     debugPrint("Building AppointmentListPage state");
     return new Scaffold(
       appBar: AppBar(
-        title: Text('Appointments'),
+        title: Text("Appointments"),
       ),
       body: AnimatedOperationsList(
           stream: FirebaseRepository.instance.getAppointmentsOfTechnician(), itemBuilder: _buildListItem),
@@ -40,7 +38,8 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
       opacity: animation,
       child: ListTile(
           title: Text(appointment.description),
-          subtitle: Text(appointment.scheduledStartTime.toString()),
+          subtitle: Text(
+              "Starts at ${appointment.scheduledStartTime.toString()}, has ${appointment.intervals.length} intervals"),
           onTap: () =>
               Navigator.push(context, MaterialPageRoute(builder: (context) => AppointmentDetailPage(appointment)))),
     );

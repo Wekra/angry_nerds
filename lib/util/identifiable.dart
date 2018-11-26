@@ -11,7 +11,7 @@ abstract class Identifiable {
     return map;
   }
 
-  static fromMap<T extends Identifiable>(Map<dynamic, dynamic> map, JsonMapper<T> mapper) {
+  static List<T> fromMap<T extends Identifiable>(Map<dynamic, dynamic> map, JsonMapper<T> mapper) {
     if (map == null) return [];
     List<T> identifiables = new List();
     map.forEach((dynamic id, dynamic itemMap) => identifiables.add(mapper(id, itemMap)));
