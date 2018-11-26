@@ -1,22 +1,30 @@
-class Device {
+import 'package:service_app/util/id_generator.dart';
+import 'package:service_app/util/identifiable.dart';
+
+class Device implements Identifiable {
+  @override
   final String id;
+
   final String name;
   final DeviceServiceStatus serviceStatus;
 
-  const Device(this.id, this.name, this.serviceStatus);
+  const Device._private(this.id, this.name, this.serviceStatus);
 
-  static Device fromJsonMap(String id, Map<String, dynamic> map) {
-    return Device(
-        id,
-        map["name"],
-        DeviceServiceStatus.values.firstWhere((v) => v.toString() == map["serviceStatus"])
+  Device(this.name, this.serviceStatus) : id = IdGenerator.generatePushChildName();
+
+  static Device fromJsonMap(String id, Map<dynamic, dynamic> map) {
+    return Device._private(
+      id,
+      map["name"],
+      DeviceServiceStatus.values.firstWhere((v) => v.toString() == map["serviceStatus"]),
     );
   }
 
-  Map<String, dynamic> toJsonMap() {
+  @override
+  Map<dynamic, dynamic> toJsonMap() {
     return {
       "name": name,
-      "serviceStatus": serviceStatus.toString()
+      "serviceStatus": serviceStatus.toString(),
     };
   }
 }

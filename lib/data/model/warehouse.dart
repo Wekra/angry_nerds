@@ -1,23 +1,27 @@
-import 'package:service_app/data/model/part_bundle.dart';
+import 'package:service_app/util/id_generator.dart';
+import 'package:service_app/util/identifiable.dart';
 
-class Warehouse {
+class Warehouse implements Identifiable {
+  @override
   final String id;
+
   final String name;
-  final List<PartBundle> partBundles;
 
-  const Warehouse(this.id, this.name, this.partBundles);
+  const Warehouse._private(this.id, this.name);
 
-  static Warehouse fromJsonMap(String id, Map<String, dynamic> map) {
-    return Warehouse(
-        id,
-        map["name"],
-        map.containsKey("partBundles")
-            ? (map["partBundles"] as List<Map<String, dynamic>>)
-            .map((partBundleMap) => PartBundle.fromJsonMap(null, partBundleMap))
-            : []);
+  Warehouse(this.name) : id = IdGenerator.generatePushChildName();
+
+  static Warehouse fromJsonMap(String id, Map<dynamic, dynamic> map) {
+    return Warehouse._private(
+      id,
+      map["name"],
+    );
   }
 
-  Map<String, dynamic> toJsonMap() {
-    return {"name": name, "partBundles": partBundles.map((part) => part.toJsonMap())};
+  @override
+  Map<dynamic, dynamic> toJsonMap() {
+    return {
+      "name": name,
+    };
   }
 }

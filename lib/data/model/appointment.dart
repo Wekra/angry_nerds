@@ -19,18 +19,13 @@ class Appointment implements Identifiable {
 
   static Appointment fromJsonMap(String id, Map<dynamic, dynamic> map) {
     return Appointment._private(
-        id,
-        map["description"],
-        DateTime.parse(map["scheduledStartTime"]),
-        DateTime.parse(map["scheduledEndTime"]),
-        DateTime.parse(map["creationTime"]),
-        map.containsKey("intervals") ? loadIntervals(map["intervals"] as Map<dynamic, dynamic>) : []);
-  }
-
-  static List<AppointmentInterval> loadIntervals(Map<dynamic, dynamic> map) {
-    List<AppointmentInterval> intervals = new List();
-    map.forEach((dynamic id, dynamic value) => intervals.add(AppointmentInterval.fromJsonMap(id, value)));
-    return intervals;
+      id,
+      map["description"],
+      DateTime.parse(map["scheduledStartTime"]),
+      DateTime.parse(map["scheduledEndTime"]),
+      DateTime.parse(map["creationTime"]),
+      Identifiable.fromMap(map["intervals"], AppointmentInterval.fromJsonMap),
+    );
   }
 
   @override
@@ -40,7 +35,7 @@ class Appointment implements Identifiable {
       "scheduledStartTime": scheduledStartTime.toIso8601String(),
       "scheduledEndTime": scheduledEndTime.toIso8601String(),
       "creationTime": creationTime.toIso8601String(),
-      "intervals": intervals.map((interval) => interval.toJsonMap()).toList()
+      "intervals": Identifiable.toMap(intervals),
     };
   }
 }
@@ -57,11 +52,18 @@ class AppointmentInterval implements Identifiable {
   AppointmentInterval(this.startTime, this.endTime) : id = IdGenerator.generatePushChildName();
 
   static AppointmentInterval fromJsonMap(String id, Map<dynamic, dynamic> map) {
-    return AppointmentInterval._private(id, DateTime.parse(map["startTime"]), DateTime.parse(map["endTime"]));
+    return AppointmentInterval._private(
+      id,
+      DateTime.parse(map["startTime"]),
+      DateTime.parse(map["endTime"]),
+    );
   }
 
   @override
   Map<dynamic, dynamic> toJsonMap() {
-    return {"startTime": startTime.toIso8601String(), "endTime": endTime.toIso8601String()};
+    return {
+      "startTime": startTime.toIso8601String(),
+      "endTime": endTime.toIso8601String(),
+    };
   }
 }

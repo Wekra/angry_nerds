@@ -1,27 +1,34 @@
 import 'package:service_app/data/model/part.dart';
+import 'package:service_app/util/id_generator.dart';
+import 'package:service_app/util/identifiable.dart';
 
-class PartBundle {
+class PartBundle implements Identifiable {
+  @override
   final String id;
+
   final int quantity;
   final String unit;
   final Part part;
 
-  const PartBundle(this.id, this.quantity, this.unit, this.part);
+  const PartBundle._private(this.id, this.quantity, this.unit, this.part);
 
-  static PartBundle fromJsonMap(String id, Map<String, dynamic> map) {
-    return PartBundle(
-        id,
-        map["quantity"],
-        map["unit"],
-        Part.fromJsonMap(null, map)
+  PartBundle(this.quantity, this.unit, this.part) : id = IdGenerator.generatePushChildName();
+
+  static PartBundle fromJsonMap(String id, Map<dynamic, dynamic> map) {
+    return PartBundle._private(
+      id,
+      map["quantity"],
+      map["unit"],
+      Part.fromJsonMap(null, map),
     );
   }
 
-  Map<String, dynamic> toJsonMap() {
+  @override
+  Map<dynamic, dynamic> toJsonMap() {
     return {
       "quantity": quantity,
       "unit": unit,
-      "part": part.toJsonMap()
+      "part": part.toJsonMap(),
     };
   }
 }
