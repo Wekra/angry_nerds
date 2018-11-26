@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
+// TODO Tapping an item in the drawer should not push a new page but instead exchange the content of the current page
 class NavDrawer extends StatelessWidget {
-
   @override
   Widget build(context) {
     return Drawer(

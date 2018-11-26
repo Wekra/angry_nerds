@@ -11,6 +11,10 @@ typedef T JsonMapper<T extends Identifiable>(String id, Map<dynamic, dynamic> ma
 
 /// Base class for helpers to create [Stream]s of [ListOperation]s that are applied to the given Firebase collections.
 /// This is useful to create list widgets that reflect the current items of a Firebase collection in real time.
+///
+/// When a subscriber is added to the returned [Stream] then instances of [InsertOperation] are immediately emitted
+/// until the subscriber can correctly represent the given Firebase collection. At that point a [ListLoadedEvent] is
+/// emitted once to signal that further [ListOperation]s are actual updates in the Firebase collection.
 abstract class BaseOperationStreamBuilder<T extends Identifiable> with StreamSubscriberMixin<Event> {
   final List<T> _items = new List();
   final StreamController<ListOperation<T>> _controller = new StreamController();

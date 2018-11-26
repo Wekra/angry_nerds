@@ -1,10 +1,7 @@
-/// Copied from:
-/// https://github.com/flutter/plugins/blob/master/packages/firebase_database/lib/src/utils/push_id_generator.dart
-
 import 'dart:math';
 
+/// Copied from:
 /// https://github.com/flutter/plugins/blob/master/packages/firebase_database/lib/src/utils/push_id_generator.dart
-
 class IdGenerator {
   static const String PUSH_CHARS = '-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz';
 

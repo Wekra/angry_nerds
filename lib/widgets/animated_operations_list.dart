@@ -7,7 +7,7 @@ import 'package:service_app/util/list_operations.dart';
 typedef Widget AnimatedOperationsListItemBuilder<T>(
     BuildContext context, T item, Animation<double> animation, int index);
 
-/// An AnimatedList widget that updates itself automatically based on a [Stream] of [ListOperation].
+/// An AnimatedList widget that updates itself automatically based on a [Stream] of [ListOperation]s.
 class AnimatedOperationsList<T> extends StatefulWidget {
   /// Creates a scrolling container that animates items when they are inserted or removed.
   AnimatedOperationsList({
