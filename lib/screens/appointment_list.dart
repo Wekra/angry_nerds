@@ -39,7 +39,8 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
       child: ListTile(
           title: Text(appointment.description),
           subtitle: Text(
-              "Starts at ${appointment.scheduledStartTime.toString()}, has ${appointment.intervals.length} intervals"),
+              "Starts at ${appointment.scheduledStartDateTime.toString()}, has ${appointment.intervals
+                  .length} intervals"),
           onTap: () =>
               Navigator.push(context, MaterialPageRoute(builder: (context) => AppointmentDetailPage(appointment)))),
     );

@@ -7,6 +7,16 @@ import 'package:quiver/core.dart';
 import 'package:service_app/util/identifiable.dart';
 import 'package:service_app/util/list_operations.dart';
 
+Optional<T> buildItemFromSnapshot<T extends Identifiable>(DataSnapshot snapshot, JsonMapper<T> itemMapper) {
+  final String id = snapshot?.key;
+  final Map<dynamic, dynamic> map = snapshot?.value;
+  if (id != null && map != null) {
+    final T item = itemMapper(id, map);
+    return Optional.of(item);
+  }
+  return Optional.absent();
+}
+
 typedef T JsonMapper<T extends Identifiable>(String id, Map<dynamic, dynamic> map);
 
 /// Base class for helpers to create [Stream]s of [ListOperation]s that are applied to the given Firebase collections.
@@ -40,17 +50,6 @@ abstract class BaseOperationStreamBuilder<T extends Identifiable> with StreamSub
       _loadedEventDispatched = true;
       _controller.add(new ListLoadedEvent());
     }
-  }
-
-  @protected
-  Optional<T> _buildItem(DataSnapshot snapshot) {
-    final String id = snapshot?.key;
-    final Map<dynamic, dynamic> map = snapshot?.value;
-    if (id != null && map != null) {
-      final T item = itemMapper(id, map);
-      return Optional.of(item);
-    }
-    return Optional.absent();
   }
 
   @protected
@@ -102,7 +101,7 @@ class ForeignKeyCollectionOperationStreamBuilder<T extends Identifiable> extends
     final String id = event.snapshot.key;
     final DatabaseReference child = itemDetailQuery.reference().child(id);
     child.once().then((DataSnapshot snapshot) =>
-        _buildItem(snapshot).ifPresent((T item) {
+        buildItemFromSnapshot(snapshot, itemMapper).ifPresent((T item) {
           final int index = _nextIndexForIdOrNull(event.previousSiblingKey) ?? 0;
           _items.insert(index, item);
           _controller.add(InsertOperation(index, item));
@@ -136,7 +135,7 @@ class ForeignKeyCollectionOperationStreamBuilder<T extends Identifiable> extends
   }
 
   void _onItemChanged(Event event) {
-    _buildItem(event.snapshot).ifPresent((T item) {
+    buildItemFromSnapshot(event.snapshot, itemMapper).ifPresent((T item) {
       final int index = _indexForIdOrNull(item.id) ?? -1;
       if (index < 0) {
         print("Received ItemChanged event for ID '${item.id}' which does not exist in list");
@@ -163,7 +162,7 @@ class SingleCollectionOperationStreamBuilder<T extends Identifiable> extends Bas
   }
 
   void _onItemAdded(Event event) {
-    _buildItem(event.snapshot).ifPresent((T item) {
+    buildItemFromSnapshot(event.snapshot, itemMapper).ifPresent((T item) {
       final int index = _nextIndexForIdOrNull(event.previousSiblingKey) ?? 0;
       _items.insert(index, item);
       _controller.add(InsertOperation(index, item));
@@ -197,7 +196,7 @@ class SingleCollectionOperationStreamBuilder<T extends Identifiable> extends Bas
   }
 
   void _onItemChanged(Event event) {
-    _buildItem(event.snapshot).ifPresent((T item) {
+    buildItemFromSnapshot(event.snapshot, itemMapper).ifPresent((T item) {
       final int index = _indexForIdOrNull(item.id) ?? -1;
       if (index < 0) {
         print("Received ItemChanged event for ID '${item.id}' which does not exist in list");

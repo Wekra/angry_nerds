@@ -1,10 +1,13 @@
 import 'dart:async';
 
 import 'package:firebase_database/firebase_database.dart';
+import 'package:quiver/core.dart';
 import 'package:service_app/data/model/appointment.dart';
 import 'package:service_app/data/model/customer.dart';
 import 'package:service_app/data/model/device.dart';
 import 'package:service_app/data/model/note.dart';
+import 'package:service_app/data/model/part.dart';
+import 'package:service_app/data/model/part_bundle.dart';
 import 'package:service_app/data/model/service_product.dart';
 import 'package:service_app/data/model/technician.dart';
 import 'package:service_app/data/model/warehouse_order.dart';
@@ -30,14 +33,14 @@ class FirebaseRepository {
   // -------------------- Notes
 
   Stream<ListOperation<Note>> getNotesOfTechnician(int technicianId) {
-    Query idsQuery = _databaseReference.child("technicians/${technician.id}/notes");
+    Query idsQuery = _databaseReference.child("technicians/${technician.id}/noteIds");
     Query detailQuery = _databaseReference.child("notes");
     return ForeignKeyCollectionOperationStreamBuilder(Note.fromJsonMap, idsQuery, detailQuery).stream;
   }
 
   Future<void> createNoteForTechnician(Note newNote) {
     return _createOrUpdateNote(newNote)
-        .then((unused) => _databaseReference.child("technicians/${technician.id}/notes/${newNote.id}").set(true));
+        .then((unused) => _databaseReference.child("technicians/${technician.id}/noteIds/${newNote.id}").set(true));
   }
 
   Future<void> _createOrUpdateNote(Note newNote) {
@@ -51,18 +54,33 @@ class FirebaseRepository {
   // -------------------- Warehouse orders
 
   Stream<ListOperation<WarehouseOrder>> getOrdersOfTechnician() {
-    Query idsQuery = _databaseReference.child("technicians/${technician.id}/orders");
+    Query idsQuery = _databaseReference.child("technicians/${technician.id}/orderIds");
     Query detailQuery = _databaseReference.child("orders");
     return ForeignKeyCollectionOperationStreamBuilder(WarehouseOrder.fromJsonMap, idsQuery, detailQuery).stream;
   }
 
   Future<void> createOrderForTechnician(WarehouseOrder newOrder) {
     return _createOrUpdateOrder(newOrder)
-        .then((unused) => _databaseReference.child("technicians/${technician.id}/orders/${newOrder.id}").set(true));
+        .then((unused) => _databaseReference.child("technicians/${technician.id}/orderIds/${newOrder.id}").set(true));
   }
 
   Future<void> _createOrUpdateOrder(WarehouseOrder newOrder) {
     return _databaseReference.child("orders/${newOrder.id}").set(newOrder.toJsonMap());
+  }
+
+  Stream<ListOperation<Part>> getPartsOfOrder(int orderId) {
+    Query query = _databaseReference.child("orders/$orderId");
+    return SingleCollectionOperationStreamBuilder(Part.fromJsonMap, query).stream;
+  }
+
+  Stream<ListOperation<Part>> getAllParts() {
+    Query query = _databaseReference.child("parts");
+    return SingleCollectionOperationStreamBuilder(Part.fromJsonMap, query).stream;
+  }
+
+  Future<Optional<Part>> getPartOfBundle(PartBundle partBundle) {
+    Query partQuery = _databaseReference.child("parts/${partBundle.partId}");
+    return partQuery.once().then((DataSnapshot snapshot) => buildItemFromSnapshot(snapshot, Part.fromJsonMap));
   }
 
   /// This method can be used to manually set the order status (as we don't have an order system)
@@ -73,15 +91,15 @@ class FirebaseRepository {
   // -------------------- Customers
 
   Stream<ListOperation<Customer>> getCustomersOfTechnician() {
-    Query idsQuery = _databaseReference.child("technicians/${technician.id}/customers");
+    Query idsQuery = _databaseReference.child("technicians/${technician.id}/customerIds");
     Query detailQuery = _databaseReference.child("customers");
     return ForeignKeyCollectionOperationStreamBuilder(Customer.fromJsonMap, idsQuery, detailQuery).stream;
   }
 
   Future<void> createCustomerForTechnician(Customer newCustomer) {
-    return _createOrUpdateCustomer(newCustomer)
-        .then((unused) =>
-        _databaseReference.child("technicians/${technician.id}/customers/${newCustomer.id}").set(true));
+    return _createOrUpdateCustomer(newCustomer).then(
+            (unused) =>
+            _databaseReference.child("technicians/${technician.id}/customerIds/${newCustomer.id}").set(true));
   }
 
   Future<void> _createOrUpdateCustomer(Customer newCustomer) {
@@ -91,13 +109,13 @@ class FirebaseRepository {
   // -------------------- Customer details
 
   Stream<ListOperation<ServiceProduct>> getServiceProductsOfCustomer(int customerId) {
-    Query idsQuery = _databaseReference.child("customers/$customerId/serviceProducts");
+    Query idsQuery = _databaseReference.child("customers/$customerId/serviceProductIds");
     Query detailQuery = _databaseReference.child("serviceProducts");
     return ForeignKeyCollectionOperationStreamBuilder(ServiceProduct.fromJsonMap, idsQuery, detailQuery).stream;
   }
 
   Stream<ListOperation<Device>> getDevicesOfCustomer(int customerId) {
-    Query idsQuery = _databaseReference.child("customers/$customerId/devices");
+    Query idsQuery = _databaseReference.child("customers/$customerId/deviceIds");
     Query detailQuery = _databaseReference.child("devices");
     return ForeignKeyCollectionOperationStreamBuilder(Device.fromJsonMap, idsQuery, detailQuery).stream;
   }
@@ -105,7 +123,7 @@ class FirebaseRepository {
   // -------------------- Appointments
 
   Stream<ListOperation<Appointment>> getAppointmentsOfTechnician() {
-    Query idsQuery = _databaseReference.child("technicians/${technician.id}/appointments");
+    Query idsQuery = _databaseReference.child("technicians/${technician.id}/appointmentIds");
     Query detailQuery = _databaseReference.child("appointments");
     return ForeignKeyCollectionOperationStreamBuilder(Appointment.fromJsonMap, idsQuery, detailQuery).stream;
   }
@@ -116,9 +134,8 @@ class FirebaseRepository {
   }
 
   Future<void> createAppointmentForTechnician(Appointment newAppointment) {
-    return _createOrUpdateAppointment(newAppointment)
-        .then((unused) =>
-        _databaseReference.child("technicians/${technician.id}/appointments/${newAppointment.id}").set(true));
+    return _createOrUpdateAppointment(newAppointment).then((unused) =>
+        _databaseReference.child("technicians/${technician.id}/appointmentIds/${newAppointment.id}").set(true));
   }
 
   Future<void> _createOrUpdateAppointment(Appointment newAppointment) {
@@ -126,7 +143,8 @@ class FirebaseRepository {
   }
 
   Future<void> addAppointmentInterval(String appointmentId, AppointmentInterval newInterval) {
-    return _databaseReference.child("appointments/$appointmentId/intervals/${newInterval.id}").set(
-        newInterval.toJsonMap());
+    return _databaseReference
+        .child("appointments/$appointmentId/intervals/${newInterval.id}")
+        .set(newInterval.toJsonMap());
   }
 }

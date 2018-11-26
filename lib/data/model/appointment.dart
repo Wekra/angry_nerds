@@ -6,24 +6,25 @@ class Appointment implements Identifiable {
   final String id;
 
   final String description;
-  final DateTime scheduledStartTime;
-  final DateTime scheduledEndTime;
-  final DateTime creationTime;
+  final DateTime scheduledStartDateTime;
+  final DateTime scheduledEndDateTime;
+  final DateTime creationDateTime;
   final List<AppointmentInterval> intervals;
 
-  const Appointment._private(this.id, this.description, this.scheduledStartTime, this.scheduledEndTime,
-      this.creationTime, this.intervals);
+  const Appointment._private(this.id, this.description, this.scheduledStartDateTime, this.scheduledEndDateTime,
+      this.creationDateTime, this.intervals);
 
-  Appointment(this.description, this.scheduledStartTime, this.scheduledEndTime, this.creationTime, this.intervals)
+  Appointment(this.description, this.scheduledStartDateTime, this.scheduledEndDateTime, this.creationDateTime,
+      this.intervals)
       : id = IdGenerator.generatePushChildName();
 
   static Appointment fromJsonMap(String id, Map<dynamic, dynamic> map) {
     return Appointment._private(
       id,
       map["description"],
-      DateTime.parse(map["scheduledStartTime"]),
-      DateTime.parse(map["scheduledEndTime"]),
-      DateTime.parse(map["creationTime"]),
+      DateTime.parse(map["scheduledStartDateTime"]),
+      DateTime.parse(map["scheduledEndDateTime"]),
+      DateTime.parse(map["creationDateTime"]),
       Identifiable.fromMap(map["intervals"], AppointmentInterval.fromJsonMap),
     );
   }
@@ -32,9 +33,9 @@ class Appointment implements Identifiable {
   Map<dynamic, dynamic> toJsonMap() {
     return {
       "description": description,
-      "scheduledStartTime": scheduledStartTime.toIso8601String(),
-      "scheduledEndTime": scheduledEndTime.toIso8601String(),
-      "creationTime": creationTime.toIso8601String(),
+      "scheduledStartDateTime": scheduledStartDateTime.toIso8601String(),
+      "scheduledEndDateTime": scheduledEndDateTime.toIso8601String(),
+      "creationDateTime": creationDateTime.toIso8601String(),
       "intervals": Identifiable.toMap(intervals),
     };
   }
@@ -44,26 +45,26 @@ class AppointmentInterval implements Identifiable {
   @override
   final String id;
 
-  final DateTime startTime;
-  final DateTime endTime;
+  final DateTime startDateTime;
+  final DateTime endDateTime;
 
-  const AppointmentInterval._private(this.id, this.startTime, this.endTime);
+  const AppointmentInterval._private(this.id, this.startDateTime, this.endDateTime);
 
-  AppointmentInterval(this.startTime, this.endTime) : id = IdGenerator.generatePushChildName();
+  AppointmentInterval(this.startDateTime, this.endDateTime) : id = IdGenerator.generatePushChildName();
 
   static AppointmentInterval fromJsonMap(String id, Map<dynamic, dynamic> map) {
     return AppointmentInterval._private(
       id,
-      DateTime.parse(map["startTime"]),
-      DateTime.parse(map["endTime"]),
+      DateTime.parse(map["startDateTime"]),
+      DateTime.parse(map["endDateTime"]),
     );
   }
 
   @override
   Map<dynamic, dynamic> toJsonMap() {
     return {
-      "startTime": startTime.toIso8601String(),
-      "endTime": endTime.toIso8601String(),
+      "startDateTime": startDateTime.toIso8601String(),
+      "endDateTime": endDateTime.toIso8601String(),
     };
   }
 }

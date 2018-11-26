@@ -1,4 +1,3 @@
-import 'package:service_app/data/model/part.dart';
 import 'package:service_app/util/id_generator.dart';
 import 'package:service_app/util/identifiable.dart';
 
@@ -7,19 +6,19 @@ class PartBundle implements Identifiable {
   final String id;
 
   final int quantity;
-  final String unit;
-  final Part part;
+  final PartUnit unit;
+  final int partId;
 
-  const PartBundle._private(this.id, this.quantity, this.unit, this.part);
+  const PartBundle._private(this.id, this.quantity, this.unit, this.partId);
 
-  PartBundle(this.quantity, this.unit, this.part) : id = IdGenerator.generatePushChildName();
+  PartBundle(this.quantity, this.unit, this.partId) : id = IdGenerator.generatePushChildName();
 
   static PartBundle fromJsonMap(String id, Map<dynamic, dynamic> map) {
     return PartBundle._private(
       id,
       map["quantity"],
-      map["unit"],
-      Part.fromJsonMap(null, map),
+      PartUnit.values.firstWhere((v) => v.toString() == map["unit"]),
+      map["partId"],
     );
   }
 
@@ -27,8 +26,10 @@ class PartBundle implements Identifiable {
   Map<dynamic, dynamic> toJsonMap() {
     return {
       "quantity": quantity,
-      "unit": unit,
-      "part": part.toJsonMap(),
+      "unit": unit.toString(),
+      "partId": partId,
     };
   }
 }
+
+enum PartUnit { amount, litres, grams, metres }

@@ -56,9 +56,9 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
         children: <Widget>[
           buildForm(context),
           Text("Description: ${appointment.description}"),
-          Text("Creation time: ${appointment.creationTime}"),
-          Text("Scheduled start time: ${appointment.scheduledStartTime}"),
-          Text("Scheduled end time: ${appointment.scheduledEndTime}"),
+          Text("Creation time: ${appointment.creationDateTime}"),
+          Text("Scheduled start time: ${appointment.scheduledStartDateTime}"),
+          Text("Scheduled end time: ${appointment.scheduledEndDateTime}"),
           Text("Intervals:"),
           Expanded(
             child: AnimatedOperationsList(
@@ -115,8 +115,8 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
     return FadeTransition(
       opacity: animation,
       child: ListTile(
-        title: Text("Start: ${interval.startTime}"),
-        subtitle: Text("End: ${interval.endTime}"),
+        title: Text("Start: ${interval.startDateTime}"),
+        subtitle: Text("End: ${interval.endDateTime}"),
       ),
     );
   }

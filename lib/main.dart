@@ -12,7 +12,7 @@ class ServiceApp extends StatelessWidget {
     debugPrint("Rendering ServiceApp");
 
     // TODO Remove once we have a login page
-    FirebaseRepository.init(Technician("7", "Der Boss", "der@boss.de", "+491629835793"));
+    FirebaseRepository.init(Technician("7", "Der Boss", "der@boss.de", "+491629835793", "Lieferwagen"));
 
     return MaterialApp(
       title: 'Service App',

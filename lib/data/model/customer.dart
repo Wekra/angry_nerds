@@ -15,7 +15,13 @@ class Customer implements Identifiable {
   Customer(this.name, this.mail, this.phone, this.address) : id = IdGenerator.generatePushChildName();
 
   static Customer fromJsonMap(String id, Map<dynamic, dynamic> map) {
-    return Customer._private(id, map["name"], map["mail"], map["phone"], Address.fromJsonMap(map["address"]));
+    return Customer._private(
+      id,
+      map["name"],
+      map["mail"],
+      map["phone"],
+      Address.fromJsonMap(map["address"]),
+    );
   }
 
   @override
@@ -42,16 +48,16 @@ class Address {
 
   static Address fromJsonMap(Map<dynamic, dynamic> map) {
     return Address(
-        map["street"],
-        map["houseNumber"],
-        map["zip"],
-        map["city"],
-        map["country"],
-        map["latitude"],
-        map["longitude"]);
+      map["street"],
+      map["houseNumber"],
+      map["zip"],
+      map["city"],
+      map["country"],
+      map["latitude"],
+      map["longitude"],
+    );
   }
 
-  @override
   Map<dynamic, dynamic> toJsonMap() {
     return {
       "street": street,

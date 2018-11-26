@@ -7,8 +7,9 @@ class Technician implements Identifiable {
   final String name;
   final String mail;
   final String phone;
+  final String warehouseName;
 
-  const Technician(this.id, this.name, this.mail, this.phone);
+  const Technician(this.id, this.name, this.mail, this.phone, this.warehouseName);
 
   static Technician fromJsonMap(String id, Map<dynamic, dynamic> map) {
     return Technician(
@@ -16,6 +17,7 @@ class Technician implements Identifiable {
       map["name"],
       map["mail"],
       map["phone"],
+      map["warehouseName"],
     );
   }
 
@@ -25,6 +27,7 @@ class Technician implements Identifiable {
       "name": name,
       "mail": mail,
       "phone": phone,
+      "warehouseName": warehouseName,
     };
   }
 }
