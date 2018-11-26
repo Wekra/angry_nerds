@@ -8,10 +8,12 @@ class WarehouseOrder implements Identifiable {
   final String description;
   final DateTime orderDateTime;
   final WarehouseOrderStatus status;
+  final String statusNote;
 
-  const WarehouseOrder._private(this.id, this.description, this.orderDateTime, this.status);
+  const WarehouseOrder._private(this.id, this.description, this.orderDateTime, this.status, this.statusNote);
 
-  WarehouseOrder(this.description, this.orderDateTime, this.status) : id = IdGenerator.generatePushChildName();
+  WarehouseOrder(this.description, this.orderDateTime, this.status, this.statusNote)
+      : id = IdGenerator.generatePushChildName();
 
   static WarehouseOrder fromJsonMap(String id, Map<dynamic, dynamic> map) {
     return WarehouseOrder._private(
@@ -19,6 +21,7 @@ class WarehouseOrder implements Identifiable {
       map["description"],
       DateTime.parse(map["orderDateTime"]),
       WarehouseOrderStatus.values.firstWhere((v) => v.toString() == "status"),
+      map["statusNote"],
     );
   }
 
@@ -28,6 +31,7 @@ class WarehouseOrder implements Identifiable {
       "description": description,
       "orderDateTime": orderDateTime.toIso8601String(),
       "status": status.toString(),
+      "statusNote": statusNote,
     };
   }
 }
