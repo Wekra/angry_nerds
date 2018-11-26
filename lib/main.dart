@@ -32,7 +32,7 @@ class ServiceApp extends StatelessWidget {
         '/appointment_list': (BuildContext context) => AppointmentListPage(),
         '/test': (BuildContext context) => FooBarPage(),
         '/part': (BuildContext context) => PartDetailPage(
-            new Part('Cable', 'Some specified cable', 353, Currency.euro)),
+            new Part('Cable', 'Some specified cable', 353, Currency.eur)),
       },
     );
   }

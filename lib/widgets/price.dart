@@ -9,20 +9,19 @@ class PriceWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String currencySymbol = "";
+    String finalText = "Price: ";
 
     switch (currency) {
-      case Currency.euro:
-        currencySymbol = "€";
+      case Currency.eur:
+        finalText += "${(price / 100.0)}€";
         break;
       case Currency.usd:
-        currencySymbol = "\$";
+        finalText += "\$${(price / 100.0)}";
         break;
       default:
-        currencySymbol = "";
         break;
     }
-    // TODO: implement build
-    return new Text("Price: ${(price / 100.0)}" + currencySymbol);
+
+    return new Text(finalText);
   }
 }
