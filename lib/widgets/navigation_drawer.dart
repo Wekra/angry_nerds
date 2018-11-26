@@ -10,7 +10,8 @@ class NavDrawer extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: <Widget>[
           DrawerHeader(
-            child: Text('Service App (Here could be name & img of the current technitian)'),
+            child: Text(
+                'Service App (Here could be name & img of the current technitian)'),
             decoration: BoxDecoration(
               color: Theme.of(context).accentColor,
             ),
@@ -27,6 +28,12 @@ class NavDrawer extends StatelessWidget {
               Navigator.pushNamed(context, '/test');
             },
           ),
+          ListTile(
+            title: Text('Part'),
+            onTap: () {
+              Navigator.pushNamed(context, '/part');
+            },
+          )
         ],
       ),
     );
