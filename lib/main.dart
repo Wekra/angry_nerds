@@ -18,6 +18,7 @@ class ServiceApp extends StatelessWidget {
         "7", "Der Boss", "der@boss.de", "+491629835793", "Lieferwagen"));
 
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Service App',
       theme: new ThemeData(
         primaryColor: Colors.blue[50],
@@ -31,8 +32,8 @@ class ServiceApp extends StatelessWidget {
       routes: <String, WidgetBuilder>{
         '/appointment_list': (BuildContext context) => AppointmentListPage(),
         '/test': (BuildContext context) => FooBarPage(),
-        '/part': (BuildContext context) => PartDetailPage(
-            new Part('Cable', 'Some specified cable', 353, Currency.eur)),
+        '/part': (BuildContext context) => PartDetailPage(new Part('Cable',
+            'Some specified cable with description text', 353, Currency.eur)),
       },
     );
   }
