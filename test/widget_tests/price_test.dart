@@ -6,14 +6,16 @@ import 'package:service_app/widgets/price.dart';
 void main() {
   testWidgets('Create Price Widget with Euro price',
       (WidgetTester tester) async {
-    await tester.pumpWidget(new PriceWidget(354, Currency.eur, TextStyle()));
+    await tester.pumpWidget(
+        new PriceWidget(354, Currency.eur, TextStyle(fontSize: 15)));
 
     expect(find.text('Price: 3.54€'), findsOneWidget);
   });
 
   testWidgets('Create Price Widget with Dollar price',
       (WidgetTester tester) async {
-    await tester.pumpWidget(new PriceWidget(354, Currency.usd, TextStyle()));
+    await tester.pumpWidget(
+        new PriceWidget(354, Currency.usd, TextStyle(fontSize: 15)));
 
     expect(find.text('Price: \$3.54'), findsOneWidget);
   });
