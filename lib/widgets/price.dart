@@ -4,8 +4,9 @@ import 'package:service_app/data/model/part.dart';
 class PriceWidget extends StatelessWidget {
   int price;
   Currency currency;
+  TextStyle style;
 
-  PriceWidget(this.price, this.currency);
+  PriceWidget(this.price, this.currency, this.style);
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +27,7 @@ class PriceWidget extends StatelessWidget {
       finalText,
       textAlign: TextAlign.start,
       textDirection: TextDirection.ltr,
-      style: TextStyle(inherit: true),
+      style: style,
     );
   }
 }

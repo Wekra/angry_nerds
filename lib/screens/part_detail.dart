@@ -26,16 +26,36 @@ class _PartDetailPageState extends State<PartDetailPage> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return new Scaffold(
-      appBar: AppBar(
-        title: Text("Part Details"),
-      ),
-      body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text("Name: ${part.name}"),
-            Text("Description: ${part.description}"),
-            new PriceWidget(part.price, part.currency)
-          ]),
-    );
+        appBar: AppBar(
+          title: Text("Part Details"),
+        ),
+        body: Container(
+            padding: EdgeInsets.all(2.0),
+            child: Card(
+                elevation: 2,
+                color: Color.fromARGB(50, 250, 250, 250),
+                child: Container(
+                  padding: EdgeInsets.all(5.0),
+                  child: Column(
+                      verticalDirection: VerticalDirection.down,
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text("${part.name}", style: TextStyle(fontSize: 45)),
+                        Text(
+                          "${part.description}",
+                          style: TextStyle(fontSize: 20),
+                        ),
+                        Container(
+                            padding: EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
+                            child: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: <Widget>[
+                                  new PriceWidget(part.price, part.currency,
+                                      TextStyle(fontSize: 18))
+                                ]))
+                      ]),
+                ))));
   }
 }
