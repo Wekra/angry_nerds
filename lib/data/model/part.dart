@@ -13,9 +13,11 @@ class Part implements Identifiable {
 
   final Currency currency;
 
-  const Part._private(this.id, this.name, this.description, this.price, this.currency);
+  const Part._private(
+      this.id, this.name, this.description, this.price, this.currency);
 
-  Part(this.name, this.description, this.price, this.currency) : id = IdGenerator.generatePushChildName();
+  Part(this.name, this.description, this.price, this.currency)
+      : id = IdGenerator.generatePushChildName();
 
   static Part fromJsonMap(String id, Map<dynamic, dynamic> map) {
     return Part._private(
@@ -38,4 +40,4 @@ class Part implements Identifiable {
   }
 }
 
-enum Currency { euro, usd }
+enum Currency { eur, usd }
