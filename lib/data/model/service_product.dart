@@ -1,12 +1,30 @@
-import 'package:service_app/data/model/appointment.dart';
-import 'package:service_app/data/model/part_bundle.dart';
+import 'package:service_app/util/id_generator.dart';
+import 'package:service_app/util/identifiable.dart';
 
-class ServiceProduct {
-  final int id;
+class ServiceProduct implements Identifiable {
+  @override
+  final String id;
+
   final String name;
   final String description;
-  final Appointment appointment;
-  final List<PartBundle> parts;
 
-  const ServiceProduct(this.id, this.name, this.description, this.appointment, this.parts);
+  const ServiceProduct._private(this.id, this.name, this.description);
+
+  ServiceProduct(this.name, this.description) : id = IdGenerator.generatePushChildName();
+
+  static ServiceProduct fromJsonMap(String id, Map<dynamic, dynamic> map) {
+    return ServiceProduct._private(
+      id,
+      map["name"],
+      map["description"],
+    );
+  }
+
+  @override
+  Map<dynamic, dynamic> toJsonMap() {
+    return {
+      "name": name,
+      "description": description,
+    };
+  }
 }
