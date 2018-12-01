@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:service_app/data/model/part.dart';
+import 'package:service_app/widgets/navigation_drawer.dart';
 import 'package:service_app/widgets/price.dart';
 
 class PartDetailPage extends StatefulWidget {
@@ -29,6 +30,7 @@ class _PartDetailPageState extends State<PartDetailPage> {
         appBar: AppBar(
           title: Text("Part Details"),
         ),
+        drawer: NavDrawer(),
         body: Container(
             padding: EdgeInsets.all(2.0),
             child: Card(
