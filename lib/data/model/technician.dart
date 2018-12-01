@@ -22,7 +22,7 @@ class Technician implements Identifiable {
   }
 
   @override
-  Map<dynamic, dynamic> toJsonMap() {
+  Map<String, dynamic> toJsonMap() {
     return {
       "name": name,
       "mail": mail,

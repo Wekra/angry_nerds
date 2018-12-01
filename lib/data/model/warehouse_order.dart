@@ -30,7 +30,7 @@ class WarehouseOrder implements Identifiable {
   }
 
   @override
-  Map<dynamic, dynamic> toJsonMap() {
+  Map<String, dynamic> toJsonMap() {
     return {
       "description": description,
       "orderDateTime": orderDateTime.toIso8601String(),

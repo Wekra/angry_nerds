@@ -21,7 +21,7 @@ class ServiceProduct implements Identifiable {
   }
 
   @override
-  Map<dynamic, dynamic> toJsonMap() {
+  Map<String, dynamic> toJsonMap() {
     return {
       "name": name,
       "description": description,

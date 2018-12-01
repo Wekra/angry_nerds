@@ -21,7 +21,7 @@ class Device implements Identifiable {
   }
 
   @override
-  Map<dynamic, dynamic> toJsonMap() {
+  Map<String, dynamic> toJsonMap() {
     return {
       "name": name,
       "serviceStatus": serviceStatus.toString(),

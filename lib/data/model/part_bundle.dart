@@ -23,7 +23,7 @@ class PartBundle implements Identifiable {
   }
 
   @override
-  Map<dynamic, dynamic> toJsonMap() {
+  Map<String, dynamic> toJsonMap() {
     return {
       "quantity": quantity,
       "unit": unit.toString(),

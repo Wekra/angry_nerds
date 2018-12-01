@@ -25,7 +25,7 @@ class Note implements Identifiable {
   }
 
   @override
-  Map<dynamic, dynamic> toJsonMap() {
+  Map<String, dynamic> toJsonMap() {
     return {
       "title": title,
       "description": description,

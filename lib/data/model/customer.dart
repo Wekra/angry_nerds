@@ -25,7 +25,7 @@ class Customer implements Identifiable {
   }
 
   @override
-  Map<dynamic, dynamic> toJsonMap() {
+  Map<String, dynamic> toJsonMap() {
     return {
       "name": name,
       "mail": mail,
@@ -58,7 +58,7 @@ class Address {
     );
   }
 
-  Map<dynamic, dynamic> toJsonMap() {
+  Map<String, dynamic> toJsonMap() {
     return {
       "street": street,
       "houseNumber": houseNumber,
