@@ -1,6 +1,6 @@
-import 'package:service_app/util/identifiable.dart';
+import 'package:service_app/data/model/base_entity.dart';
 
-class Technician implements Identifiable {
+class Technician implements BaseEntity {
   @override
   final String id;
 

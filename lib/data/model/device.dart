@@ -1,7 +1,7 @@
+import 'package:service_app/data/model/base_entity.dart';
 import 'package:service_app/util/id_generator.dart';
-import 'package:service_app/util/identifiable.dart';
 
-class Device implements Identifiable {
+class Device implements BaseEntity {
   @override
   final String id;
 

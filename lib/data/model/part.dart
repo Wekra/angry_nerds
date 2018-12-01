@@ -1,7 +1,7 @@
+import 'package:service_app/data/model/base_entity.dart';
 import 'package:service_app/util/id_generator.dart';
-import 'package:service_app/util/identifiable.dart';
 
-class Part implements Identifiable {
+class Part implements BaseEntity {
   @override
   final String id;
 
@@ -13,8 +13,7 @@ class Part implements Identifiable {
 
   final Currency currency;
 
-  const Part._private(
-      this.id, this.name, this.description, this.price, this.currency);
+  const Part._private(this.id, this.name, this.description, this.price, this.currency);
 
   Part(this.name, this.description, this.price, this.currency)
       : id = IdGenerator.generatePushChildName();

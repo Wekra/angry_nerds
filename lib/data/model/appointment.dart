@@ -1,7 +1,7 @@
+import 'package:service_app/data/model/base_entity.dart';
 import 'package:service_app/util/id_generator.dart';
-import 'package:service_app/util/identifiable.dart';
 
-class BaseAppointment implements Identifiable {
+class BaseAppointment implements BaseEntity {
   @override
   final String id;
 
@@ -38,19 +38,19 @@ class Appointment extends BaseAppointment {
       DateTime.parse(map["scheduledStartDateTime"]),
       DateTime.parse(map["scheduledEndDateTime"]),
       DateTime.parse(map["creationDateTime"]),
-      Identifiable.fromMap(map["intervals"], AppointmentInterval.fromJsonMap),
+      BaseEntity.fromMap(map["intervals"], AppointmentInterval.fromJsonMap),
     );
   }
 
   @override
   Map<String, dynamic> toJsonMap() {
     Map<String, dynamic> map = super.toJsonMap();
-    map["intervals"] = Identifiable.toMap(intervals);
+    map["intervals"] = BaseEntity.toMap(intervals);
     return map;
   }
 }
 
-class AppointmentInterval implements Identifiable {
+class AppointmentInterval implements BaseEntity {
   @override
   final String id;
 

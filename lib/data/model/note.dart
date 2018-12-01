@@ -1,7 +1,7 @@
+import 'package:service_app/data/model/base_entity.dart';
 import 'package:service_app/util/id_generator.dart';
-import 'package:service_app/util/identifiable.dart';
 
-class Note implements Identifiable {
+class Note implements BaseEntity {
   @override
   final String id;
 

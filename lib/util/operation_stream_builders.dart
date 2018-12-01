@@ -4,10 +4,10 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/utils/stream_subscriber_mixin.dart';
 import 'package:meta/meta.dart';
 import 'package:quiver/core.dart';
-import 'package:service_app/util/identifiable.dart';
+import 'package:service_app/data/model/base_entity.dart';
 import 'package:service_app/util/list_operations.dart';
 
-Optional<T> buildItemFromSnapshot<T extends Identifiable>(DataSnapshot snapshot, JsonMapper<T> itemMapper) {
+Optional<T> buildItemFromSnapshot<T extends BaseEntity>(DataSnapshot snapshot, JsonMapper<T> itemMapper) {
   final String id = snapshot?.key;
   final Map<dynamic, dynamic> map = snapshot?.value;
   if (id != null && map != null) {
@@ -17,7 +17,7 @@ Optional<T> buildItemFromSnapshot<T extends Identifiable>(DataSnapshot snapshot,
   return Optional.absent();
 }
 
-typedef T JsonMapper<T extends Identifiable>(String id, Map<dynamic, dynamic> map);
+typedef T JsonMapper<T extends BaseEntity>(String id, Map<dynamic, dynamic> map);
 
 /// Base class for helpers to create [Stream]s of [ListOperation]s that are applied to the given Firebase collections.
 /// This is useful to create list widgets that reflect the current items of a Firebase collection in real time.
@@ -25,7 +25,7 @@ typedef T JsonMapper<T extends Identifiable>(String id, Map<dynamic, dynamic> ma
 /// When a subscriber is added to the returned [Stream] then instances of [InsertOperation] are immediately emitted
 /// until the subscriber can correctly represent the given Firebase collection. At that point a [ListLoadedEvent] is
 /// emitted once to signal that further [ListOperation]s are actual updates in the Firebase collection.
-abstract class BaseOperationStreamBuilder<T extends Identifiable> with StreamSubscriberMixin<Event> {
+abstract class BaseOperationStreamBuilder<T extends BaseEntity> with StreamSubscriberMixin<Event> {
   final List<T> _items = new List();
   final StreamController<ListOperation<T>> _controller = new StreamController();
   bool _loadedEventDispatched = false;
@@ -80,7 +80,7 @@ abstract class BaseOperationStreamBuilder<T extends Identifiable> with StreamSub
   }
 }
 
-class ForeignKeyCollectionOperationStreamBuilder<T extends Identifiable> extends BaseOperationStreamBuilder<T> {
+class ForeignKeyCollectionOperationStreamBuilder<T extends BaseEntity> extends BaseOperationStreamBuilder<T> {
   final Query itemIdsQuery;
   final Query itemDetailQuery;
 
@@ -147,7 +147,7 @@ class ForeignKeyCollectionOperationStreamBuilder<T extends Identifiable> extends
   }
 }
 
-class SingleCollectionOperationStreamBuilder<T extends Identifiable> extends BaseOperationStreamBuilder<T> {
+class SingleCollectionOperationStreamBuilder<T extends BaseEntity> extends BaseOperationStreamBuilder<T> {
   final Query itemQuery;
 
   SingleCollectionOperationStreamBuilder(JsonMapper<T> itemMapper, this.itemQuery) : super(itemMapper);

@@ -1,8 +1,8 @@
+import 'package:service_app/data/model/base_entity.dart';
 import 'package:service_app/data/model/part_bundle.dart';
 import 'package:service_app/util/id_generator.dart';
-import 'package:service_app/util/identifiable.dart';
 
-class WarehouseOrder implements Identifiable {
+class WarehouseOrder implements BaseEntity {
   @override
   final String id;
 
@@ -25,7 +25,7 @@ class WarehouseOrder implements Identifiable {
       DateTime.parse(map["orderDateTime"]),
       WarehouseOrderStatus.values.firstWhere((v) => v.toString() == map["status"]),
       map["statusNote"],
-      Identifiable.fromMap(map["partBundles"], PartBundle.fromJsonMap),
+      BaseEntity.fromMap(map["partBundles"], PartBundle.fromJsonMap),
     );
   }
 
@@ -36,7 +36,7 @@ class WarehouseOrder implements Identifiable {
       "orderDateTime": orderDateTime.toIso8601String(),
       "status": status.toString(),
       "statusNote": statusNote,
-      "partBundles": Identifiable.toMap(partBundles),
+      "partBundles": BaseEntity.toMap(partBundles),
     };
   }
 }
