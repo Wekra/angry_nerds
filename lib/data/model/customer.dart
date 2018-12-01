@@ -1,7 +1,8 @@
+import 'package:service_app/util/base_entity.dart';
 import 'package:service_app/util/id_generator.dart';
-import 'package:service_app/util/identifiable.dart';
+import 'package:service_app/util/json_serializable.dart';
 
-class Customer implements Identifiable {
+class Customer implements BaseEntity {
   @override
   final String id;
 
@@ -25,7 +26,7 @@ class Customer implements Identifiable {
   }
 
   @override
-  Map<dynamic, dynamic> toJsonMap() {
+  Map<String, dynamic> toJsonMap() {
     return {
       "name": name,
       "mail": mail,
@@ -35,7 +36,7 @@ class Customer implements Identifiable {
   }
 }
 
-class Address {
+class Address implements JsonSerializable {
   final String street;
   final String houseNumber;
   final String zip;
@@ -58,7 +59,8 @@ class Address {
     );
   }
 
-  Map<dynamic, dynamic> toJsonMap() {
+  @override
+  Map<String, dynamic> toJsonMap() {
     return {
       "street": street,
       "houseNumber": houseNumber,

@@ -1,7 +1,7 @@
+import 'package:service_app/util/base_entity.dart';
 import 'package:service_app/util/id_generator.dart';
-import 'package:service_app/util/identifiable.dart';
 
-class Note implements Identifiable {
+class Note implements BaseEntity {
   @override
   final String id;
 
@@ -25,7 +25,7 @@ class Note implements Identifiable {
   }
 
   @override
-  Map<dynamic, dynamic> toJsonMap() {
+  Map<String, dynamic> toJsonMap() {
     return {
       "title": title,
       "description": description,

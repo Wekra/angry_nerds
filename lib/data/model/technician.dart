@@ -1,6 +1,6 @@
-import 'package:service_app/util/identifiable.dart';
+import 'package:service_app/util/base_entity.dart';
 
-class Technician implements Identifiable {
+class Technician implements BaseEntity {
   @override
   final String id;
 
@@ -22,7 +22,7 @@ class Technician implements Identifiable {
   }
 
   @override
-  Map<dynamic, dynamic> toJsonMap() {
+  Map<String, dynamic> toJsonMap() {
     return {
       "name": name,
       "mail": mail,

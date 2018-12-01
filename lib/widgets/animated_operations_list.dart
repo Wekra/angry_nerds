@@ -14,6 +14,7 @@ class AnimatedOperationsList<T> extends StatefulWidget {
     Key key,
     @required this.stream,
     @required this.itemBuilder,
+    this.headerWidgets = const [],
     this.loadingWidget,
     this.scrollDirection = Axis.vertical,
     this.reverse = false,
@@ -38,6 +39,8 @@ class AnimatedOperationsList<T> extends StatefulWidget {
   /// Implementations of this callback should assume that [AnimatedList.removeItem]
   /// removes an item immediately.
   final AnimatedOperationsListItemBuilder<T> itemBuilder;
+
+  final List<Widget> headerWidgets;
 
   /// A widget to display while the query is loading.
   final Widget loadingWidget;
@@ -123,6 +126,7 @@ class AnimatedOperationsListState<T> extends State<AnimatedOperationsList<T>> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     disposeSubscription();
+    _items.clear();
     subscription = widget.stream.listen(_handleOperation);
   }
 
@@ -182,7 +186,7 @@ class AnimatedOperationsListState<T> extends State<AnimatedOperationsList<T>> {
     return AnimatedList(
       key: _animatedListKey,
       itemBuilder: _buildItem,
-      initialItemCount: _items.length,
+      initialItemCount: _items.length + widget.headerWidgets.length,
       scrollDirection: widget.scrollDirection,
       reverse: widget.reverse,
       controller: widget.controller,
@@ -194,6 +198,11 @@ class AnimatedOperationsListState<T> extends State<AnimatedOperationsList<T>> {
   }
 
   Widget _buildItem(BuildContext context, int index, Animation<double> animation) {
-    return widget.itemBuilder(context, _items[index], animation, index);
+    if (index < widget.headerWidgets.length) {
+      return widget.headerWidgets[index];
+    } else {
+      int itemIndex = index - widget.headerWidgets.length;
+      return widget.itemBuilder(context, _items[itemIndex], animation, itemIndex);
+    }
   }
 }

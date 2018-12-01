@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:service_app/data/firebase_repository.dart';
 import 'package:service_app/data/model/appointment.dart';
+import 'package:service_app/util/id_generator.dart';
 import 'package:service_app/widgets/animated_operations_list.dart';
 import 'package:service_app/widgets/pickers.dart';
 
@@ -11,33 +12,53 @@ class AppointmentDetailPage extends StatefulWidget {
 
   @override
   _AppointmentDetailPageState createState() {
-    return _AppointmentDetailPageState(appointment == null);
+    return _AppointmentDetailPageState(appointment);
   }
 }
 
-// TODO Finish this page
 class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
-  Appointment appointment;
   DateTime measurementStart;
 
-  bool _editMode = false;
+  bool _editMode;
+  bool _appointmentStored;
+
   final _formKey = GlobalKey<FormState>();
 
-  final TextEditingController _descriptionController = TextEditingController();
-  DateTime scheduledStartTime;
-  DateTime scheduledEndTime;
-  final DateTime creationTime = DateTime.now();
+  String _appointmentId;
+  final TextEditingController _description = TextEditingController();
+  final TextEditingController _scheduledStart = TextEditingController();
+  final TextEditingController _scheduledEnd = TextEditingController();
+  final TextEditingController _creation = TextEditingController();
 
-  _AppointmentDetailPageState(this._editMode) {
-    DateTime now = DateTime.now();
-    scheduledStartTime = now;
-    scheduledEndTime = now;
+  _AppointmentDetailPageState(Appointment appointment) {
+    if (appointment != null) {
+      _initForExistingAppointment(appointment);
+    } else {
+      _initForNewAppointment();
+    }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    appointment = widget.appointment;
+  void _initForExistingAppointment(Appointment appointment) {
+    _editMode = false;
+    _appointmentStored = true;
+
+    _appointmentId = appointment.id;
+    _description.text = appointment.description;
+    _scheduledStart.text = appointment.scheduledStartDateTime.toIso8601String();
+    _scheduledEnd.text = appointment.scheduledEndDateTime.toIso8601String();
+    _creation.text = appointment.creationDateTime.toIso8601String();
+  }
+
+  void _initForNewAppointment() {
+    DateTime now = DateTime.now();
+    _editMode = true;
+    _appointmentStored = false;
+
+    _appointmentId = IdGenerator.generatePushChildName();
+    _description.text = "";
+    _scheduledStart.text = now.toIso8601String();
+    _scheduledEnd.text = now.toIso8601String();
+    _creation.text = now.toIso8601String();
   }
 
   @override
@@ -52,62 +73,66 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
           )
         ],
       ),
-      body: Column(
-        children: <Widget>[
-          buildForm(context),
-          Text("Description: ${appointment.description}"),
-          Text("Creation time: ${appointment.creationDateTime}"),
-          Text("Scheduled start time: ${appointment.scheduledStartDateTime}"),
-          Text("Scheduled end time: ${appointment.scheduledEndDateTime}"),
-          Text("Intervals:"),
-          Expanded(
-            child: AnimatedOperationsList(
-                stream: FirebaseRepository.instance.getIntervalsOfAppointment(appointment.id),
-                itemBuilder: _buildIntervalWidget),
-          )
+      body: AnimatedOperationsList(
+        headerWidgets: <Widget>[
+          Container(
+              padding: EdgeInsets.all(16),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: <Widget>[
+                    TextFormField(
+                      enabled: _editMode,
+                      controller: _description,
+                      validator: _isNotEmpty,
+                      decoration: InputDecoration(labelText: "Description", disabledBorder: InputBorder.none),
+                    ),
+                    _buildDateTimeFormItem(context, _scheduledStart, "Scheduled start"),
+                    _buildDateTimeFormItem(context, _scheduledEnd, "Scheduled end"),
+                    _buildDateTimeFormItem(context, _creation, "Creation"),
+                  ],
+                ),
+              )),
+          Divider(),
         ],
+        stream: FirebaseRepository.instance.getIntervalsOfAppointment(_appointmentId),
+        itemBuilder: _buildIntervalWidget,
       ),
-      floatingActionButton: FloatingActionButton(
-          child: Icon(measurementStart != null ? Icons.stop : Icons.play_arrow),
-          onPressed: () {
-            if (measurementStart != null) {
-              _finishMeasurement();
-            } else {
-              _startMeasurement();
-            }
-          }),
+      floatingActionButton: _appointmentStored ? _buildFloatingActionButton() : null,
     );
   }
 
-  Widget buildForm(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        children: <Widget>[
-          TextFormField(
-            enabled: _editMode,
-            controller: _descriptionController,
-            validator: _isNotEmpty,
-            decoration: InputDecoration(labelText: "Description"),
-          ),
-          InkWell(
-            child: Text(scheduledStartTime.toString()),
-            onTap: () =>
-                showDateAndTimePicker(context).then((DateTime dateTime) {
-                  setState(() {
-                    scheduledStartTime = dateTime;
-                  });
-                }),
-          ),
-        ],
+  FloatingActionButton _buildFloatingActionButton() {
+    return FloatingActionButton(
+        child: Icon(measurementStart != null ? Icons.stop : Icons.play_arrow),
+        onPressed: () {
+          if (measurementStart != null) {
+            _finishMeasurement();
+          } else {
+            _startMeasurement();
+          }
+        });
+  }
+
+  Widget _buildDateTimeFormItem(BuildContext context, TextEditingController controller, String labelText) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 8),
+      child: InkWell(
+        child: TextFormField(
+          enabled: false,
+          controller: controller,
+          decoration: InputDecoration(labelText: labelText, disabledBorder: InputBorder.none),
+        ),
+        onTap: _editMode
+            ? () => showDateAndTimePicker(context).then((dateTime) => controller.text = dateTime.toIso8601String())
+            : null,
       ),
     );
   }
 
   String _isNotEmpty(String value) {
-    if (value.isEmpty) {
-      return 'Please enter some text';
-    }
+    if (value.isEmpty) return 'Please enter some text';
+    return null;
   }
 
   Widget _buildIntervalWidget(BuildContext context, AppointmentInterval interval, Animation<double> animation,
@@ -134,7 +159,14 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
 
   void _saveAppointment() {
     if (_formKey.currentState.validate()) {
-      String text = _descriptionController.text;
+      BaseAppointment appointment = BaseAppointment(
+          _appointmentId, _description.text, DateTime.parse(_scheduledStart.text),
+          DateTime.parse(_scheduledEnd.text), DateTime.parse(_creation.text));
+      FirebaseRepository.instance.createAppointmentForTechnician(appointment).then((unused) {
+        setState(() {
+          _appointmentStored = true;
+        });
+      });
     }
   }
 
@@ -149,7 +181,7 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
   void _finishMeasurement() {
     DateTime measurementEnd = DateTime.now();
     AppointmentInterval interval = new AppointmentInterval(measurementStart, measurementEnd);
-    FirebaseRepository.instance.addAppointmentInterval(appointment.id, interval).then((unused) {
+    FirebaseRepository.instance.addAppointmentInterval(_appointmentId, interval).then((unused) {
       setState(() {
         measurementStart = null;
       });

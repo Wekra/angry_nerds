@@ -1,7 +1,7 @@
+import 'package:service_app/util/base_entity.dart';
 import 'package:service_app/util/id_generator.dart';
-import 'package:service_app/util/identifiable.dart';
 
-class PartBundle implements Identifiable {
+class PartBundle implements BaseEntity {
   @override
   final String id;
 
@@ -23,7 +23,7 @@ class PartBundle implements Identifiable {
   }
 
   @override
-  Map<dynamic, dynamic> toJsonMap() {
+  Map<String, dynamic> toJsonMap() {
     return {
       "quantity": quantity,
       "unit": unit.toString(),
