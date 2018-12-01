@@ -41,7 +41,31 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
               "Starts at ${appointment.scheduledStartDateTime.toString()}, has ${appointment.intervals
                   .length} intervals"),
           onTap: () =>
-              Navigator.push(context, MaterialPageRoute(builder: (context) => AppointmentDetailPage(appointment)))),
+              Navigator.push(context, MaterialPageRoute(builder: (context) => AppointmentDetailPage(appointment))),
+        onLongPress: () => _showDeleteDialog(context, appointment),
+      ),
     );
+  }
+
+  void _showDeleteDialog(BuildContext context, Appointment appointment) {
+    AlertDialog dialog = AlertDialog(
+      title: Text("Delete appointment \"${appointment.description}\"?"),
+      actions: <Widget>[
+        FlatButton(
+          child: Text("No"),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        FlatButton(
+          child: Text("Yes"),
+          onPressed: () {
+            FirebaseRepository.instance.deleteAppointmentForTechnician(appointment.id);
+            Navigator.of(context).pop();
+          },
+        ),
+      ],
+    );
+    showDialog(context: context, builder: (context) => dialog);
   }
 }

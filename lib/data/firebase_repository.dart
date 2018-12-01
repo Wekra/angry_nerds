@@ -147,4 +147,11 @@ class FirebaseRepository {
         .child("appointments/$appointmentId/intervals/${newInterval.id}")
         .set(newInterval.toJsonMap());
   }
+
+  Future<void> deleteAppointmentForTechnician(String appointmentId) {
+    return _databaseReference
+        .child("technicians/${technician.id}/appointmentIds/$appointmentId")
+        .remove()
+        .then((unused) => _databaseReference.child("appointments/$appointmentId").remove());
+  }
 }
