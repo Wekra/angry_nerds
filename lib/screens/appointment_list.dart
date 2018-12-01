@@ -26,9 +26,8 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
       floatingActionButton: new FloatingActionButton(
           elevation: 0.0,
           child: new Icon(Icons.add),
-          onPressed: () =>
-              FirebaseRepository.instance.createAppointmentForTechnician(
-                  new Appointment("Desc", DateTime.now(), DateTime.now(), DateTime.now(), []))),
+        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AppointmentDetailPage(null))),
+      ),
       drawer: NavDrawer(),
     );
   }
