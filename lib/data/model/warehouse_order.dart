@@ -1,5 +1,5 @@
-import 'package:service_app/data/model/base_entity.dart';
 import 'package:service_app/data/model/part_bundle.dart';
+import 'package:service_app/util/base_entity.dart';
 import 'package:service_app/util/id_generator.dart';
 
 class WarehouseOrder implements BaseEntity {

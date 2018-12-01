@@ -4,7 +4,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/utils/stream_subscriber_mixin.dart';
 import 'package:meta/meta.dart';
 import 'package:quiver/core.dart';
-import 'package:service_app/data/model/base_entity.dart';
+import 'package:service_app/util/base_entity.dart';
 import 'package:service_app/util/json_deserializer.dart';
 import 'package:service_app/util/list_operations.dart';
 
