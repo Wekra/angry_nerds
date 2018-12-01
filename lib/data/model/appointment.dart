@@ -1,7 +1,7 @@
 import 'package:service_app/util/id_generator.dart';
 import 'package:service_app/util/identifiable.dart';
 
-class Appointment implements Identifiable {
+class BaseAppointment implements Identifiable {
   @override
   final String id;
 
@@ -9,17 +9,30 @@ class Appointment implements Identifiable {
   final DateTime scheduledStartDateTime;
   final DateTime scheduledEndDateTime;
   final DateTime creationDateTime;
+
+  const BaseAppointment(this.id, this.description, this.scheduledStartDateTime, this.scheduledEndDateTime,
+      this.creationDateTime);
+
+  @override
+  Map<String, dynamic> toJsonMap() {
+    return {
+      "description": description,
+      "scheduledStartDateTime": scheduledStartDateTime.toIso8601String(),
+      "scheduledEndDateTime": scheduledEndDateTime.toIso8601String(),
+      "creationDateTime": creationDateTime.toIso8601String(),
+    };
+  }
+}
+
+class Appointment extends BaseAppointment {
   final List<AppointmentInterval> intervals;
 
-  const Appointment._private(this.id, this.description, this.scheduledStartDateTime, this.scheduledEndDateTime,
-      this.creationDateTime, this.intervals);
-
-  Appointment(this.description, this.scheduledStartDateTime, this.scheduledEndDateTime, this.creationDateTime,
-      this.intervals)
-      : id = IdGenerator.generatePushChildName();
+  Appointment(String id, String description, DateTime scheduledStartDateTime, DateTime scheduledEndDateTime,
+      DateTime creationDateTime, this.intervals)
+      : super(id, description, scheduledStartDateTime, scheduledEndDateTime, creationDateTime);
 
   static Appointment fromJsonMap(String id, Map<dynamic, dynamic> map) {
-    return Appointment._private(
+    return Appointment(
       id,
       map["description"],
       DateTime.parse(map["scheduledStartDateTime"]),
@@ -30,14 +43,10 @@ class Appointment implements Identifiable {
   }
 
   @override
-  Map<dynamic, dynamic> toJsonMap() {
-    return {
-      "description": description,
-      "scheduledStartDateTime": scheduledStartDateTime.toIso8601String(),
-      "scheduledEndDateTime": scheduledEndDateTime.toIso8601String(),
-      "creationDateTime": creationDateTime.toIso8601String(),
-      "intervals": Identifiable.toMap(intervals),
-    };
+  Map<String, dynamic> toJsonMap() {
+    Map<String, dynamic> map = super.toJsonMap();
+    map["intervals"] = Identifiable.toMap(intervals);
+    return map;
   }
 }
 
@@ -61,7 +70,7 @@ class AppointmentInterval implements Identifiable {
   }
 
   @override
-  Map<dynamic, dynamic> toJsonMap() {
+  Map<String, dynamic> toJsonMap() {
     return {
       "startDateTime": startDateTime.toIso8601String(),
       "endDateTime": endDateTime.toIso8601String(),

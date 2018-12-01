@@ -133,13 +133,13 @@ class FirebaseRepository {
     return SingleCollectionOperationStreamBuilder(AppointmentInterval.fromJsonMap, itemQuery).stream;
   }
 
-  Future<void> createAppointmentForTechnician(Appointment newAppointment) {
+  Future<void> createAppointmentForTechnician(BaseAppointment newAppointment) {
     return _createOrUpdateAppointment(newAppointment).then((unused) =>
         _databaseReference.child("technicians/${technician.id}/appointmentIds/${newAppointment.id}").set(true));
   }
 
-  Future<void> _createOrUpdateAppointment(Appointment newAppointment) {
-    return _databaseReference.child("appointments/${newAppointment.id}").set(newAppointment.toJsonMap());
+  Future<void> _createOrUpdateAppointment(BaseAppointment newAppointment) {
+    return _databaseReference.child("appointments/${newAppointment.id}").update(newAppointment.toJsonMap());
   }
 
   Future<void> addAppointmentInterval(String appointmentId, AppointmentInterval newInterval) {

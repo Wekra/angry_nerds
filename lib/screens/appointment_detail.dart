@@ -24,7 +24,7 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
 
   final _formKey = GlobalKey<FormState>();
 
-  String appointmentId;
+  String _appointmentId;
   final TextEditingController _description = TextEditingController();
   final TextEditingController _scheduledStart = TextEditingController();
   final TextEditingController _scheduledEnd = TextEditingController();
@@ -42,7 +42,7 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
     _editMode = false;
     _appointmentStored = true;
 
-    appointmentId = appointment.id;
+    _appointmentId = appointment.id;
     _description.text = appointment.description;
     _scheduledStart.text = appointment.scheduledStartDateTime.toIso8601String();
     _scheduledEnd.text = appointment.scheduledEndDateTime.toIso8601String();
@@ -54,7 +54,7 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
     _editMode = true;
     _appointmentStored = false;
 
-    appointmentId = IdGenerator.generatePushChildName();
+    _appointmentId = IdGenerator.generatePushChildName();
     _description.text = "";
     _scheduledStart.text = now.toIso8601String();
     _scheduledEnd.text = now.toIso8601String();
@@ -73,47 +73,45 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
           )
         ],
       ),
-      body: Column(
-        children: <Widget>[
+      body: AnimatedOperationsList(
+        headerWidgets: <Widget>[
           Container(
-            padding: EdgeInsets.all(16),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: <Widget>[
-                  TextFormField(
-                    enabled: _editMode,
-                    controller: _description,
-                    validator: _isNotEmpty,
-                    decoration: InputDecoration(labelText: "Description"),
-                  ),
-                  _buildDateTimeFormItem(context, _scheduledStart, "Scheduled start time"),
-                  _buildDateTimeFormItem(context, _scheduledEnd, "Scheduled end time"),
-                  _buildDateTimeFormItem(context, _creation, "Creation time"),
-                ],
-              ),
-            ),
-          ),
-          Text("Intervals:"),
-          Expanded(
-            child: AnimatedOperationsList(
-                stream: FirebaseRepository.instance.getIntervalsOfAppointment(appointmentId),
-                itemBuilder: _buildIntervalWidget),
-          )
+              padding: EdgeInsets.all(16),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: <Widget>[
+                    TextFormField(
+                      enabled: _editMode,
+                      controller: _description,
+                      validator: _isNotEmpty,
+                      decoration: InputDecoration(labelText: "Description", disabledBorder: InputBorder.none),
+                    ),
+                    _buildDateTimeFormItem(context, _scheduledStart, "Scheduled start"),
+                    _buildDateTimeFormItem(context, _scheduledEnd, "Scheduled end"),
+                    _buildDateTimeFormItem(context, _creation, "Creation"),
+                  ],
+                ),
+              )),
+          Divider(),
         ],
+        stream: FirebaseRepository.instance.getIntervalsOfAppointment(_appointmentId),
+        itemBuilder: _buildIntervalWidget,
       ),
-      floatingActionButton: _appointmentStored
-          ? FloatingActionButton(
-          child: Icon(measurementStart != null ? Icons.stop : Icons.play_arrow),
-          onPressed: () {
-            if (measurementStart != null) {
-              _finishMeasurement();
-            } else {
-              _startMeasurement();
-            }
-          })
-          : null,
+      floatingActionButton: _appointmentStored ? _buildFloatingActionButton() : null,
     );
+  }
+
+  FloatingActionButton _buildFloatingActionButton() {
+    return FloatingActionButton(
+        child: Icon(measurementStart != null ? Icons.stop : Icons.play_arrow),
+        onPressed: () {
+          if (measurementStart != null) {
+            _finishMeasurement();
+          } else {
+            _startMeasurement();
+          }
+        });
   }
 
   Widget _buildDateTimeFormItem(BuildContext context, TextEditingController controller, String labelText) {
@@ -123,7 +121,7 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
         child: TextFormField(
           enabled: false,
           controller: controller,
-          decoration: InputDecoration(labelText: labelText),
+          decoration: InputDecoration(labelText: labelText, disabledBorder: InputBorder.none),
         ),
         onTap: _editMode
             ? () => showDateAndTimePicker(context).then((dateTime) => controller.text = dateTime.toIso8601String())
@@ -161,8 +159,9 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
 
   void _saveAppointment() {
     if (_formKey.currentState.validate()) {
-      Appointment appointment = Appointment(_description.text, DateTime.parse(_scheduledStart.text),
-          DateTime.parse(_scheduledEnd.text), DateTime.parse(_creation.text), []);
+      BaseAppointment appointment = BaseAppointment(
+          _appointmentId, _description.text, DateTime.parse(_scheduledStart.text),
+          DateTime.parse(_scheduledEnd.text), DateTime.parse(_creation.text));
       FirebaseRepository.instance.createAppointmentForTechnician(appointment).then((unused) {
         setState(() {
           _appointmentStored = true;
@@ -182,7 +181,7 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
   void _finishMeasurement() {
     DateTime measurementEnd = DateTime.now();
     AppointmentInterval interval = new AppointmentInterval(measurementStart, measurementEnd);
-    FirebaseRepository.instance.addAppointmentInterval(appointmentId, interval).then((unused) {
+    FirebaseRepository.instance.addAppointmentInterval(_appointmentId, interval).then((unused) {
       setState(() {
         measurementStart = null;
       });

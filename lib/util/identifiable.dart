@@ -3,10 +3,10 @@ import 'package:service_app/util/operation_stream_builders.dart';
 abstract class Identifiable {
   String get id;
 
-  Map<dynamic, dynamic> toJsonMap();
+  Map<String, dynamic> toJsonMap();
 
-  static Map<dynamic, dynamic> toMap(List<Identifiable> identifiables) {
-    Map<dynamic, dynamic> map = new Map();
+  static Map<String, dynamic> toMap(List<Identifiable> identifiables) {
+    Map<String, dynamic> map = new Map();
     identifiables.forEach((Identifiable identifiable) => map[identifiable.id] = identifiable.toJsonMap());
     return map;
   }
