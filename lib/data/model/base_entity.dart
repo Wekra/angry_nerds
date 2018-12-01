@@ -1,6 +1,6 @@
 import 'package:service_app/util/identifiable.dart';
+import 'package:service_app/util/json_mapper.dart';
 import 'package:service_app/util/json_serializable.dart';
-import 'package:service_app/util/operation_stream_builders.dart';
 
 abstract class BaseEntity implements Identifiable, JsonSerializable {
   static Map<String, dynamic> toMap(List<BaseEntity> entities) {

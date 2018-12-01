@@ -5,6 +5,7 @@ import 'package:firebase_database/ui/utils/stream_subscriber_mixin.dart';
 import 'package:meta/meta.dart';
 import 'package:quiver/core.dart';
 import 'package:service_app/data/model/base_entity.dart';
+import 'package:service_app/util/json_mapper.dart';
 import 'package:service_app/util/list_operations.dart';
 
 Optional<T> buildItemFromSnapshot<T extends BaseEntity>(DataSnapshot snapshot, JsonMapper<T> itemMapper) {
@@ -16,8 +17,6 @@ Optional<T> buildItemFromSnapshot<T extends BaseEntity>(DataSnapshot snapshot, J
   }
   return Optional.absent();
 }
-
-typedef T JsonMapper<T extends BaseEntity>(String id, Map<dynamic, dynamic> map);
 
 /// Base class for helpers to create [Stream]s of [ListOperation]s that are applied to the given Firebase collections.
 /// This is useful to create list widgets that reflect the current items of a Firebase collection in real time.
