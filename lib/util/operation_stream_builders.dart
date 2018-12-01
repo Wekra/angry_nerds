@@ -5,10 +5,10 @@ import 'package:firebase_database/ui/utils/stream_subscriber_mixin.dart';
 import 'package:meta/meta.dart';
 import 'package:quiver/core.dart';
 import 'package:service_app/data/model/base_entity.dart';
-import 'package:service_app/util/json_mapper.dart';
+import 'package:service_app/util/json_deserializer.dart';
 import 'package:service_app/util/list_operations.dart';
 
-Optional<T> buildItemFromSnapshot<T extends BaseEntity>(DataSnapshot snapshot, JsonMapper<T> itemMapper) {
+Optional<T> buildItemFromSnapshot<T extends BaseEntity>(DataSnapshot snapshot, JsonDeserializer<T> itemMapper) {
   final String id = snapshot?.key;
   final Map<dynamic, dynamic> map = snapshot?.value;
   if (id != null && map != null) {
@@ -29,11 +29,11 @@ abstract class BaseOperationStreamBuilder<T extends BaseEntity> with StreamSubsc
   final StreamController<ListOperation<T>> _controller = new StreamController();
   bool _loadedEventDispatched = false;
 
-  final JsonMapper<T> itemMapper;
+  final JsonDeserializer<T> itemDeserializer;
 
   Stream<ListOperation<T>> get stream => _controller.stream;
 
-  BaseOperationStreamBuilder(this.itemMapper) {
+  BaseOperationStreamBuilder(this.itemDeserializer) {
     _controller.onCancel = cancelSubscriptions;
     _controller.onListen = _listenToFirebaseEvents;
   }
@@ -83,8 +83,9 @@ class ForeignKeyCollectionOperationStreamBuilder<T extends BaseEntity> extends B
   final Query itemIdsQuery;
   final Query itemDetailQuery;
 
-  ForeignKeyCollectionOperationStreamBuilder(JsonMapper<T> itemMapper, this.itemIdsQuery, this.itemDetailQuery)
-      : super(itemMapper);
+  ForeignKeyCollectionOperationStreamBuilder(JsonDeserializer<T> itemDeserializer, this.itemIdsQuery,
+      this.itemDetailQuery)
+      : super(itemDeserializer);
 
   @override
   void _listenToFirebaseEvents() {
@@ -100,7 +101,7 @@ class ForeignKeyCollectionOperationStreamBuilder<T extends BaseEntity> extends B
     final String id = event.snapshot.key;
     final DatabaseReference child = itemDetailQuery.reference().child(id);
     child.once().then((DataSnapshot snapshot) =>
-        buildItemFromSnapshot(snapshot, itemMapper).ifPresent((T item) {
+        buildItemFromSnapshot(snapshot, itemDeserializer).ifPresent((T item) {
           final int index = _nextIndexForIdOrNull(event.previousSiblingKey) ?? 0;
           _items.insert(index, item);
           _controller.add(InsertOperation(index, item));
@@ -134,7 +135,7 @@ class ForeignKeyCollectionOperationStreamBuilder<T extends BaseEntity> extends B
   }
 
   void _onItemChanged(Event event) {
-    buildItemFromSnapshot(event.snapshot, itemMapper).ifPresent((T item) {
+    buildItemFromSnapshot(event.snapshot, itemDeserializer).ifPresent((T item) {
       final int index = _indexForIdOrNull(item.id) ?? -1;
       if (index < 0) {
         print("Received ItemChanged event for ID '${item.id}' which does not exist in list");
@@ -149,7 +150,8 @@ class ForeignKeyCollectionOperationStreamBuilder<T extends BaseEntity> extends B
 class SingleCollectionOperationStreamBuilder<T extends BaseEntity> extends BaseOperationStreamBuilder<T> {
   final Query itemQuery;
 
-  SingleCollectionOperationStreamBuilder(JsonMapper<T> itemMapper, this.itemQuery) : super(itemMapper);
+  SingleCollectionOperationStreamBuilder(JsonDeserializer<T> itemDeserializer, this.itemQuery)
+      : super(itemDeserializer);
 
   @override
   void _listenToFirebaseEvents() {
@@ -161,7 +163,7 @@ class SingleCollectionOperationStreamBuilder<T extends BaseEntity> extends BaseO
   }
 
   void _onItemAdded(Event event) {
-    buildItemFromSnapshot(event.snapshot, itemMapper).ifPresent((T item) {
+    buildItemFromSnapshot(event.snapshot, itemDeserializer).ifPresent((T item) {
       final int index = _nextIndexForIdOrNull(event.previousSiblingKey) ?? 0;
       _items.insert(index, item);
       _controller.add(InsertOperation(index, item));
@@ -195,7 +197,7 @@ class SingleCollectionOperationStreamBuilder<T extends BaseEntity> extends BaseO
   }
 
   void _onItemChanged(Event event) {
-    buildItemFromSnapshot(event.snapshot, itemMapper).ifPresent((T item) {
+    buildItemFromSnapshot(event.snapshot, itemDeserializer).ifPresent((T item) {
       final int index = _indexForIdOrNull(item.id) ?? -1;
       if (index < 0) {
         print("Received ItemChanged event for ID '${item.id}' which does not exist in list");

@@ -1,5 +1,5 @@
 import 'package:service_app/util/identifiable.dart';
-import 'package:service_app/util/json_mapper.dart';
+import 'package:service_app/util/json_deserializer.dart';
 import 'package:service_app/util/json_serializable.dart';
 
 abstract class BaseEntity implements Identifiable, JsonSerializable {
@@ -9,10 +9,10 @@ abstract class BaseEntity implements Identifiable, JsonSerializable {
     return map;
   }
 
-  static List<T> fromMap<T extends BaseEntity>(Map<dynamic, dynamic> map, JsonMapper<T> mapper) {
+  static List<T> fromMap<T extends BaseEntity>(Map<dynamic, dynamic> map, JsonDeserializer<T> deserializer) {
     if (map == null) return [];
     List<T> entities = new List();
-    map.forEach((dynamic id, dynamic itemMap) => entities.add(mapper(id, itemMap)));
+    map.forEach((dynamic id, dynamic itemMap) => entities.add(deserializer(id, itemMap)));
     return entities;
   }
 }
