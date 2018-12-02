@@ -19,19 +19,19 @@ class NavDrawer extends StatelessWidget {
           ListTile(
             title: Text('Service Appointments'),
             onTap: () {
-              Navigator.pushNamed(context, '/appointment_list');
+              Navigator.popAndPushNamed(context, '/appointment_list');
             },
           ),
           ListTile(
             title: Text('Test'),
             onTap: () {
-              Navigator.pushNamed(context, '/test');
+              Navigator.popAndPushNamed(context, '/test');
             },
           ),
           ListTile(
             title: Text('Part'),
             onTap: () {
-              Navigator.pushNamed(context, '/part');
+              Navigator.popAndPushNamed(context, '/part');
             },
           )
         ],
