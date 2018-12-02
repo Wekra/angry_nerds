@@ -1,6 +1,5 @@
 import 'package:service_app/data/model/part_bundle.dart';
 import 'package:service_app/util/base_entity.dart';
-import 'package:service_app/util/id_generator.dart';
 
 class WarehouseOrder implements BaseEntity {
   @override
@@ -12,14 +11,11 @@ class WarehouseOrder implements BaseEntity {
   final String statusNote;
   final List<PartBundle> partBundles;
 
-  const WarehouseOrder._private(this.id, this.description, this.orderDateTime, this.status, this.statusNote,
+  const WarehouseOrder(this.id, this.description, this.orderDateTime, this.status, this.statusNote,
       this.partBundles);
 
-  WarehouseOrder(this.description, this.orderDateTime, this.status, this.statusNote, this.partBundles)
-      : id = IdGenerator.generatePushChildName();
-
   static WarehouseOrder fromJsonMap(String id, Map<dynamic, dynamic> map) {
-    return WarehouseOrder._private(
+    return WarehouseOrder(
       id,
       map["description"],
       DateTime.parse(map["orderDateTime"]),

@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:service_app/data/firebase_repository.dart';
-import 'package:service_app/data/model/part.dart';
 import 'package:service_app/data/model/technician.dart';
-import 'package:service_app/screens/appointment_list.dart';
-import 'package:service_app/screens/foo_bar.dart';
-import 'package:service_app/screens/part_detail.dart';
+import 'package:service_app/screens/home.dart';
 
 void main() => runApp(ServiceApp());
 
@@ -19,22 +16,11 @@ class ServiceApp extends StatelessWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Service App',
+      title: "Service App",
       theme: new ThemeData(
-        primaryColor: Colors.blue[50],
-        primaryColorLight: Colors.white,
-        primaryColorDark: new Color(0xffb1bfca),
-        secondaryHeaderColor: Colors.blueAccent[700],
-        accentColor: Colors.blueAccent[700],
-        canvasColor: Colors.white,
+        primarySwatch: Colors.blue,
       ),
-      home: AppointmentListPage(),
-      routes: <String, WidgetBuilder>{
-        '/appointment_list': (BuildContext context) => AppointmentListPage(),
-        '/test': (BuildContext context) => FooBarPage(),
-        '/part': (BuildContext context) => PartDetailPage(new Part('Cable',
-            'Some specified cable with description text', 353, Currency.eur)),
-      },
+      home: HomePage(),
     );
   }
 }

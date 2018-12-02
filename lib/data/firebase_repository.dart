@@ -32,7 +32,7 @@ class FirebaseRepository {
 
   // -------------------- Notes
 
-  Stream<ListOperation<Note>> getNotesOfTechnician(int technicianId) {
+  Stream<ListOperation<Note>> getNotesOfTechnician() {
     Query idsQuery = _databaseReference.child("technicians/${technician.id}/noteIds");
     Query detailQuery = _databaseReference.child("notes");
     return ForeignKeyCollectionOperationStreamBuilder(Note.fromJsonMap, idsQuery, detailQuery).stream;
@@ -44,11 +44,18 @@ class FirebaseRepository {
   }
 
   Future<void> _createOrUpdateNote(Note newNote) {
-    return _databaseReference.child("notes/${newNote.id}").set(newNote.toJsonMap());
+    return _databaseReference.child("notes/${newNote.id}").update(newNote.toJsonMap());
   }
 
-  Future<void> setNoteStatus(int noteId, NoteStatus status) {
+  Future<void> setNoteStatus(String noteId, NoteStatus status) {
     return _databaseReference.child("notes/$noteId/status").set(status.toString());
+  }
+
+  Future<void> deleteNoteForTechnician(String noteId) {
+    return _databaseReference
+        .child("technicians/${technician.id}/noteIds/$noteId")
+        .remove()
+        .then((unused) => _databaseReference.child("notes/$noteId").remove());
   }
 
   // -------------------- Warehouse orders
@@ -65,7 +72,7 @@ class FirebaseRepository {
   }
 
   Future<void> _createOrUpdateOrder(WarehouseOrder newOrder) {
-    return _databaseReference.child("orders/${newOrder.id}").set(newOrder.toJsonMap());
+    return _databaseReference.child("orders/${newOrder.id}").update(newOrder.toJsonMap());
   }
 
   Stream<ListOperation<Part>> getPartsOfOrder(int orderId) {
@@ -81,6 +88,13 @@ class FirebaseRepository {
   Future<Optional<Part>> getPartOfBundle(PartBundle partBundle) {
     Query partQuery = _databaseReference.child("parts/${partBundle.partId}");
     return partQuery.once().then((DataSnapshot snapshot) => buildItemFromSnapshot(snapshot, Part.fromJsonMap));
+  }
+
+  Future<void> deleteOrderForTechnician(String orderId) {
+    return _databaseReference
+        .child("technicians/${technician.id}/orderIds/$orderId")
+        .remove()
+        .then((unused) => _databaseReference.child("orders/$orderId").remove());
   }
 
   /// This method can be used to manually set the order status (as we don't have an order system)
@@ -103,7 +117,7 @@ class FirebaseRepository {
   }
 
   Future<void> _createOrUpdateCustomer(Customer newCustomer) {
-    return _databaseReference.child("customers/${newCustomer.id}").set(newCustomer.toJsonMap());
+    return _databaseReference.child("customers/${newCustomer.id}").update(newCustomer.toJsonMap());
   }
 
   // -------------------- Customer details

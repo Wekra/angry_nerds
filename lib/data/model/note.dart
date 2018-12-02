@@ -1,5 +1,4 @@
 import 'package:service_app/util/base_entity.dart';
-import 'package:service_app/util/id_generator.dart';
 
 class Note implements BaseEntity {
   @override
@@ -10,12 +9,10 @@ class Note implements BaseEntity {
   final NoteStatus status;
   final DateTime creationDateTime;
 
-  const Note._private(this.id, this.title, this.description, this.status, this.creationDateTime);
-
-  Note(this.title, this.description, this.status, this.creationDateTime) : id = IdGenerator.generatePushChildName();
+  const Note(this.id, this.title, this.description, this.status, this.creationDateTime);
 
   static Note fromJsonMap(String id, Map<dynamic, dynamic> map) {
-    return Note._private(
+    return Note(
       id,
       map["title"],
       map["description"],
