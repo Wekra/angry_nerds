@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:service_app/data/model/part.dart';
-import 'package:service_app/widgets/navigation_drawer.dart';
 import 'package:service_app/widgets/price.dart';
 
 class PartDetailPage extends StatefulWidget {
@@ -27,10 +26,6 @@ class _PartDetailPageState extends State<PartDetailPage> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return new Scaffold(
-        appBar: AppBar(
-          title: Text("Part Details"),
-        ),
-        drawer: NavDrawer(),
         body: Container(
             padding: EdgeInsets.all(2.0),
             child: Card(
@@ -54,8 +49,7 @@ class _PartDetailPageState extends State<PartDetailPage> {
                                 mainAxisSize: MainAxisSize.max,
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: <Widget>[
-                                  new PriceWidget(part.price, part.currency,
-                                      TextStyle(fontSize: 18))
+                                  new PriceWidget(part.price, part.currency, TextStyle(fontSize: 18))
                                 ]))
                       ]),
                 ))));

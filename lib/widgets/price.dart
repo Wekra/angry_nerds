@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:service_app/data/model/part.dart';
 
 class PriceWidget extends StatelessWidget {
-  int price;
-  Currency currency;
-  TextStyle style;
+  final int price;
+  final Currency currency;
+  final TextStyle style;
 
-  PriceWidget(this.price, this.currency, this.style);
+  const PriceWidget(this.price, this.currency, this.style);
 
   @override
   Widget build(BuildContext context) {

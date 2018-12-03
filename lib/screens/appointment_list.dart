@@ -2,15 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:service_app/data/firebase_repository.dart';
 import 'package:service_app/data/model/appointment.dart';
 import 'package:service_app/screens/appointment_detail.dart';
+import 'package:service_app/screens/drawer_page.dart';
 import 'package:service_app/widgets/animated_operations_list.dart';
 
-import '../widgets/navigation_drawer.dart';
-
-class AppointmentListPage extends StatefulWidget {
+class AppointmentListPage extends DrawerPage {
   @override
   _AppointmentListPageState createState() {
     return _AppointmentListPageState();
   }
+
+  @override
+  String get title => "Appointments";
+
+  @override
+  IconData get icon => Icons.calendar_today;
 }
 
 class _AppointmentListPageState extends State<AppointmentListPage> {
@@ -18,9 +23,6 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
   Widget build(BuildContext context) {
     debugPrint("Building AppointmentListPage state");
     return new Scaffold(
-      appBar: AppBar(
-        title: Text("Appointments"),
-      ),
       body: AnimatedOperationsList(
           stream: FirebaseRepository.instance.getAppointmentsOfTechnician(), itemBuilder: _buildListItem),
       floatingActionButton: new FloatingActionButton(
@@ -28,7 +30,6 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
           child: new Icon(Icons.add),
         onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AppointmentDetailPage(null))),
       ),
-      drawer: NavDrawer(),
     );
   }
 

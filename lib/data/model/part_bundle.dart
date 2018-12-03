@@ -7,7 +7,7 @@ class PartBundle implements BaseEntity {
 
   final int quantity;
   final PartUnit unit;
-  final int partId;
+  final String partId;
 
   const PartBundle._private(this.id, this.quantity, this.unit, this.partId);
 
