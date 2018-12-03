@@ -18,7 +18,12 @@ class ServiceApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: "Service App",
       theme: new ThemeData(
-        primarySwatch: Colors.blue,
+        primaryColor: Colors.blue[50],
+        primaryColorLight: Colors.white,
+        primaryColorDark: new Color(0xffb1bfca),
+        secondaryHeaderColor: Colors.blueAccent[700],
+        accentColor: Colors.blueAccent[700],
+        canvasColor: Colors.white,
       ),
       home: HomePage(),
     );
