@@ -13,8 +13,8 @@ matrix:
     - name: Test
       env:
         - JOB=PR
-        - COMMAND = test --coverage test/widget_tests/* test/unit_tests/* test/*
-        - FLUTTER_HOME = $HOME/flutter/bin
+        - COMMAND = "test --coverage test/widget_tests/* test/unit_tests/* test/*"
+        - FLUTTER_HOME = "$HOME/flutter/bin"
       os: linux
       language: dart
       addons:
