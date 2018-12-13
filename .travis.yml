@@ -40,9 +40,7 @@ matrix:
       env:
         - JOB=APK
         - ANDROID_HOME=$HOME/android-sdk
-      os:
-        - linux
-      sudo: false
+      os: linux
       language: android
       jdk: oraclejdk8
       before_cache:
