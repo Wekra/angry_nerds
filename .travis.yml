@@ -35,7 +35,7 @@ matrix:
         - coveralls-lcov coverage/lcov.info
 
     # Builds an APK
-    - if: (branch = master) OR (branch = development)
+    - #if: (branch = master) OR (branch = development)
       name: Build
       env:
         - JOB=APK
@@ -63,6 +63,12 @@ matrix:
         - echo y | $HOME/android-sdk/tools/bin/sdkmanager 'platforms;android-27' > /dev/null
         - echo y | $HOME/android-sdk/tools/bin/sdkmanager 'extras;google;m2repository' > /dev/null
 
+        - if [ ! -d $HOME/flutter/bin ] ; then
+            git clone https://github.com/flutter/flutter.git -b stable ;
+          fi
+        - ./flutter/bin/flutter upgrade
+        - ./flutter/bin/flutter doctor
+
       addons:
         apt:
           # Flutter depends on /usr/lib/x86_64-linux-gnu/libstdc++.so.6 version GLIBCXX_3.4.18
@@ -75,8 +81,8 @@ matrix:
         #Prepare pre-accepted licenses to not be prompted at installation
         #- mkdir -p "$ANDROID_HOME/licenses"
         #- cp ./google_licenses/* "$ANDROID_HOME/licenses/"
-        - git clone https://github.com/flutter/flutter.git -b beta
-        - export PATH=./flutter/bin:$PATH
+        #- git clone https://github.com/flutter/flutter.git -b beta
+        #- export PATH=./flutter/bin:$PATH
       script:
         - ./flutter/bin/flutter -v build apk
 
