@@ -13,7 +13,7 @@ matrix:
     - name: Test
       env: JOB=PR
       os: linux
-      language: dart
+      language: generic
       addons:
         apt:
           # Flutter depends on /usr/lib/x86_64-linux-gnu/libstdc++.so.6 version GLIBCXX_3.4.18
@@ -23,8 +23,8 @@ matrix:
             - libstdc++6
             - fonts-droid
       install:
-        - if [ ! -d ./flutter/bin ] ; then
-          git clone https://github.com/flutter/flutter.git -b stable ;
+        - if [ ! -d $HOME/flutter/bin ] ; then
+            git clone https://github.com/flutter/flutter.git -b stable ;
           fi
         - ./flutter/bin/flutter upgrade
         - ./flutter/bin/flutter doctor
