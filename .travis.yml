@@ -10,10 +10,13 @@ matrix:
 
   include:
    # Runs unit tests without emulators.
-    - env: JOB=PR
+    - name: Test
+      env:
+        - JOB=PR
+        - COMMAND = test --coverage test/widget_tests/* test/unit_tests/* test/*
+        - FLUTTER_HOME = $HOME/flutter/bin
       os: linux
-      language: generic
-      sudo: false
+      language: dart
       addons:
         apt:
           # Flutter depends on /usr/lib/x86_64-linux-gnu/libstdc++.so.6 version GLIBCXX_3.4.18
@@ -22,17 +25,20 @@ matrix:
           packages:
             - libstdc++6
             - fonts-droid
-      before_script:
-        - git clone https://github.com/flutter/flutter.git -b beta
-        - ./flutter/bin/flutter doctor
+      install:
+        - if test ! -d $FLUTTER_HOME ; then git clone https://github.com/flutter/flutter.git -b stable fi
+        - export PATH=$PATH:$FLUTTER_HOME
+        - flutter upgrade
+        - flutter doctor
         - gem install coveralls-lcov
       script:
-        - ./flutter/bin/flutter test --coverage test/widget_tests/* test/unit_tests/* test/*
+        - flutter $COMMAND
       after_success:
         - coveralls-lcov coverage/lcov.info
 
     # Builds an APK
     - if: (branch = master) OR (branch = development)
+      name: Build
       env:
         - JOB=APK
         - ANDROID_HOME=$HOME/android-sdk
@@ -103,6 +109,9 @@ cache:
 
     # Android build cache (see http://tools.android.com/tech-docs/build-cache)
     - $HOME/.android/build-cache
+
+    # Flutter
+    - $HOME/flutter
 
     # Dart pubspec cache
     - $HOME/.pub-cache
