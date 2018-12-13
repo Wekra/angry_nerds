@@ -26,7 +26,7 @@ matrix:
             - libstdc++6
             - fonts-droid
       install:
-        - if test ! -d $FLUTTER_HOME ; then git clone https://github.com/flutter/flutter.git -b stable fi
+        - if test ! -d $FLUTTER_HOME ; then git clone https://github.com/flutter/flutter.git -b stable ; fi
         - export PATH=$PATH:$FLUTTER_HOME
         - flutter upgrade
         - flutter doctor
