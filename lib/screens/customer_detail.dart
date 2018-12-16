@@ -5,9 +5,7 @@ import 'package:service_app/widgets/customer_datatab.dart';
 
 class CustomerDetailPage extends DrawerPage {
   final Customer customer = new Customer("ACME", "hska-service@acme.com", "+49 172 123456",
-      new Address("Moltekstraße", "30", "76133", "Karlsruhe", "Germany", 49.014951, 8.389975));
-
-  //const CustomerDetailPage(this.customer);
+      new Address("Moltkestraße", "30", "76133", "Karlsruhe", "Germany", 49.014951, 8.389975));
 
   @override
   String get title => "Customer";
