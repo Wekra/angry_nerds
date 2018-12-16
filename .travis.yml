@@ -20,7 +20,7 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test # if we don't specify this, the libstdc++6 we get is the wrong version
           packages:
-            - libstdc++6
+            - lib32stdc++6
             - fonts-droid
       install:
         - if [ ! -d $HOME/flutter/bin ] ; then
@@ -71,7 +71,7 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test # if we don't specify this, the libstdc++6 we get is the wrong version
           packages:
-            - libstdc++6
+            - lib32stdc++6
             - fonts-droid
       before_script:
         #Prepare pre-accepted licenses to not be prompted at installation
