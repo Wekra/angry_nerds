@@ -9,9 +9,10 @@ class BaseAppointment implements BaseEntity {
   final DateTime scheduledStartDateTime;
   final DateTime scheduledEndDateTime;
   final DateTime creationDateTime;
+  final String customerId;
 
   const BaseAppointment(this.id, this.description, this.scheduledStartDateTime, this.scheduledEndDateTime,
-      this.creationDateTime);
+    this.creationDateTime, this.customerId);
 
   @override
   Map<String, dynamic> toJsonMap() {
@@ -20,6 +21,7 @@ class BaseAppointment implements BaseEntity {
       "scheduledStartDateTime": scheduledStartDateTime.toIso8601String(),
       "scheduledEndDateTime": scheduledEndDateTime.toIso8601String(),
       "creationDateTime": creationDateTime.toIso8601String(),
+      "customerId": customerId,
     };
   }
 }
@@ -28,8 +30,8 @@ class Appointment extends BaseAppointment {
   final List<AppointmentInterval> intervals;
 
   Appointment(String id, String description, DateTime scheduledStartDateTime, DateTime scheduledEndDateTime,
-      DateTime creationDateTime, this.intervals)
-      : super(id, description, scheduledStartDateTime, scheduledEndDateTime, creationDateTime);
+    DateTime creationDateTime, String customerId, this.intervals)
+    : super(id, description, scheduledStartDateTime, scheduledEndDateTime, creationDateTime, customerId);
 
   static Appointment fromJsonMap(String id, Map<dynamic, dynamic> map) {
     return Appointment(
@@ -38,6 +40,7 @@ class Appointment extends BaseAppointment {
       DateTime.parse(map["scheduledStartDateTime"]),
       DateTime.parse(map["scheduledEndDateTime"]),
       DateTime.parse(map["creationDateTime"]),
+      map["customerId"],
       BaseEntity.fromMap(map["intervals"], AppointmentInterval.fromJsonMap),
     );
   }

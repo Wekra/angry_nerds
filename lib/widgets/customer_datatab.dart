@@ -6,6 +6,8 @@ class CustomerDataTab extends StatelessWidget {
   final Customer customer;
   GoogleMapController mapController;
 
+  CustomerDataTab(this.customer);
+
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
     _addMarkerToMap();
@@ -18,76 +20,42 @@ class CustomerDataTab extends StatelessWidget {
         icon: BitmapDescriptor.defaultMarker));
   }
 
-  CustomerDataTab(this.customer);
-
   @override
   Widget build(BuildContext context) {
     return new Column(
-      verticalDirection: VerticalDirection.down,
       children: <Widget>[
-        new Row(
-          children: <Widget>[
-            new Text("Name:", style: TextStyle(fontWeight: FontWeight.bold)),
-            new Text("${customer.name}")
-          ],
-        ),
-        new Row(
-          children: <Widget>[
-            new Text("Phone:", style: TextStyle(fontWeight: FontWeight.bold)),
-            new Text("${customer.phone}")
-          ],
-        ),
-        new Row(
-          children: <Widget>[
-            new Text("Email:", style: TextStyle(fontWeight: FontWeight.bold)),
-            new Text("${customer.mail}")
-          ],
-        ),
-        new Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          textDirection: TextDirection.ltr,
-          textBaseline: TextBaseline.alphabetic,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            new Text("Address:", style: TextStyle(fontWeight: FontWeight.bold)),
-            new Column(
-              verticalDirection: VerticalDirection.down,
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                new Row(
-                  children: <Widget>[
-                    new Text("${customer.address.street} "),
-                    new Text("${customer.address.houseNumber}")
-                  ],
-                ),
-                new Row(
-                  children: <Widget>[
-                    new Text("${customer.address.zip} "),
-                    new Text("${customer.address.city}")
-                  ],
-                ),
-                new Row(
-                  children: <Widget>[
-                    new Text("${customer.address.country}"),
-                  ],
-                )
-              ],
-            )
-          ],
-        ),
-        new Container(
-            height: 370,
-            width: 350,
-            padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
-            child: new GoogleMap(
-              onMapCreated: _onMapCreated,
-              options: GoogleMapOptions(
-                cameraPosition: CameraPosition(
-                    target: LatLng(customer.address.latitude, customer.address.longitude),
-                    zoom: 15.0),
+        Container(
+          padding: EdgeInsets.only(bottom: 16),
+          child: Column(
+            children: <Widget>[
+              ListTile(
+                title: Text(customer.name),
+                subtitle: Text("Name"),
               ),
-            ))
+              ListTile(
+                title: Text(customer.phone),
+                subtitle: Text("Phone"),
+              ),
+              ListTile(
+                title: Text(customer.mail),
+                subtitle: Text("Mail"),
+              ),
+              ListTile(
+                title: Text(customer.address.toMultiLineString()),
+                subtitle: Text("Address"),
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: new GoogleMap(
+            onMapCreated: _onMapCreated,
+            options: GoogleMapOptions(
+              cameraPosition:
+              CameraPosition(target: LatLng(customer.address.latitude, customer.address.longitude), zoom: 15.0),
+            ),
+          ),
+        )
       ],
     );
   }

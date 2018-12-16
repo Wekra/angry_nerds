@@ -76,6 +76,10 @@ class Address implements JsonSerializable {
 
   @override
   String toString() {
-    return "${street} ${houseNumber}\n${zip} ${city}\n${country}";
+    return "$street $houseNumber, $zip $city, $country";
+  }
+
+  String toMultiLineString() {
+    return "$street $houseNumber\n$zip $city\n$country";
   }
 }
