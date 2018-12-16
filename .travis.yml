@@ -35,7 +35,7 @@ matrix:
         - coveralls-lcov coverage/lcov.info
 
     # Builds an APK
-    - #if: (branch = master) OR (branch = development)
+    - if: (branch = master) OR (branch = development)
       name: Build
       env:
         - JOB=APK
@@ -47,7 +47,6 @@ matrix:
         # Do not cache a few Gradle files/directories (see https://docs.travis-ci.com/user/languages/java/#Caching)
         - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
         - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
-
       install:
         # Download and unzip the Android SDK tools (if not already there thanks to the cache mechanism)
         # Latest version available here: https://developer.android.com/studio/#command-tools
@@ -66,7 +65,6 @@ matrix:
           fi
         - ./flutter/bin/flutter upgrade
         - ./flutter/bin/flutter doctor
-
       addons:
         apt:
           # Flutter depends on /usr/lib/x86_64-linux-gnu/libstdc++.so.6 version GLIBCXX_3.4.18
@@ -77,10 +75,8 @@ matrix:
             - fonts-droid
       before_script:
         #Prepare pre-accepted licenses to not be prompted at installation
-        #- mkdir -p "$ANDROID_HOME/licenses"
-        #- cp ./google_licenses/* "$ANDROID_HOME/licenses/"
-        #- git clone https://github.com/flutter/flutter.git -b beta
-        #- export PATH=./flutter/bin:$PATH
+        - mkdir -p "$ANDROID_HOME/licenses"
+        - cp ./google_licenses/* "$ANDROID_HOME/licenses/"
       script:
         - ./flutter/bin/flutter -v build apk
 
