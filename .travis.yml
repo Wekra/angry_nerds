@@ -10,20 +10,23 @@ matrix:
 
   include:
    # Runs unit tests without emulators.
-    - env: JOB=PR
+    - name: Test
+      env: JOB=PR
       os: linux
       language: generic
-      sudo: false
       addons:
         apt:
           # Flutter depends on /usr/lib/x86_64-linux-gnu/libstdc++.so.6 version GLIBCXX_3.4.18
           sources:
             - ubuntu-toolchain-r-test # if we don't specify this, the libstdc++6 we get is the wrong version
           packages:
-            - libstdc++6
+            - lib32stdc++6
             - fonts-droid
-      before_script:
-        - git clone https://github.com/flutter/flutter.git -b beta
+      install:
+        - if [ ! -d $HOME/flutter/bin ] ; then
+            git clone https://github.com/flutter/flutter.git -b stable ;
+          fi
+        - ./flutter/bin/flutter upgrade
         - ./flutter/bin/flutter doctor
         - gem install coveralls-lcov
       script:
@@ -33,19 +36,17 @@ matrix:
 
     # Builds an APK
     - if: (branch = master) OR (branch = development)
+      name: Build
       env:
         - JOB=APK
         - ANDROID_HOME=$HOME/android-sdk
-      os:
-        - linux
-      sudo: false
+      os: linux
       language: android
       jdk: oraclejdk8
       before_cache:
         # Do not cache a few Gradle files/directories (see https://docs.travis-ci.com/user/languages/java/#Caching)
         - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
         - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
-
       install:
         # Download and unzip the Android SDK tools (if not already there thanks to the cache mechanism)
         # Latest version available here: https://developer.android.com/studio/#command-tools
@@ -59,20 +60,23 @@ matrix:
         - echo y | $HOME/android-sdk/tools/bin/sdkmanager 'platforms;android-27' > /dev/null
         - echo y | $HOME/android-sdk/tools/bin/sdkmanager 'extras;google;m2repository' > /dev/null
 
+        - if [ ! -d $HOME/flutter/bin ] ; then
+            git clone https://github.com/flutter/flutter.git -b stable ;
+          fi
+        - ./flutter/bin/flutter upgrade
+        - ./flutter/bin/flutter doctor
       addons:
         apt:
           # Flutter depends on /usr/lib/x86_64-linux-gnu/libstdc++.so.6 version GLIBCXX_3.4.18
           sources:
             - ubuntu-toolchain-r-test # if we don't specify this, the libstdc++6 we get is the wrong version
           packages:
-            - libstdc++6
+            - lib32stdc++6
             - fonts-droid
       before_script:
         #Prepare pre-accepted licenses to not be prompted at installation
-        #- mkdir -p "$ANDROID_HOME/licenses"
-        #- cp ./google_licenses/* "$ANDROID_HOME/licenses/"
-        - git clone https://github.com/flutter/flutter.git -b beta
-        - export PATH=./flutter/bin:$PATH
+        - mkdir -p "$ANDROID_HOME/licenses"
+        - cp ./google_licenses/* "$ANDROID_HOME/licenses/"
       script:
         - ./flutter/bin/flutter -v build apk
 
@@ -103,6 +107,9 @@ cache:
 
     # Android build cache (see http://tools.android.com/tech-docs/build-cache)
     - $HOME/.android/build-cache
+
+    # Flutter
+    - $HOME/flutter
 
     # Dart pubspec cache
     - $HOME/.pub-cache
