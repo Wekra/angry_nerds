@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:service_app/data/firebase_repository.dart';
 import 'package:service_app/data/model/appointment.dart';
+import 'package:service_app/screens/customer_list_all.dart';
 import 'package:service_app/util/id_generator.dart';
 import 'package:service_app/widgets/animated_operations_list.dart';
 import 'package:service_app/widgets/pickers.dart';
@@ -25,10 +26,14 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
   final _formKey = GlobalKey<FormState>();
 
   String _appointmentId;
+  String _customerId;
+  String _originalCustomerId;
+
   final TextEditingController _description = TextEditingController();
   final TextEditingController _scheduledStart = TextEditingController();
   final TextEditingController _scheduledEnd = TextEditingController();
   final TextEditingController _creation = TextEditingController();
+  final TextEditingController _customerName = TextEditingController();
 
   _AppointmentDetailPageState(Appointment appointment) {
     if (appointment != null) {
@@ -47,6 +52,15 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
     _scheduledStart.text = appointment.scheduledStartDateTime.toIso8601String();
     _scheduledEnd.text = appointment.scheduledEndDateTime.toIso8601String();
     _creation.text = appointment.creationDateTime.toIso8601String();
+
+    FirebaseRepository.instance
+      .getCustomerById(appointment.customerId)
+      .then((customerOpt) =>
+      customerOpt.ifPresent((customer) {
+        _customerId = customer.id;
+        _originalCustomerId = customer.id;
+        _customerName.text = customer.name;
+      }));
   }
 
   void _initForNewAppointment() {
@@ -90,6 +104,18 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                     _buildDateTimeFormItem(context, _scheduledStart, "Scheduled start"),
                     _buildDateTimeFormItem(context, _scheduledEnd, "Scheduled end"),
                     _buildDateTimeFormItem(context, _creation, "Creation"),
+                    Container(
+                      margin: EdgeInsets.only(bottom: 8),
+                      child: InkWell(
+                        child: TextFormField(
+                          enabled: false,
+                          controller: _customerName,
+                          validator: _isNotEmpty,
+                          decoration: InputDecoration(labelText: "Customer", disabledBorder: InputBorder.none),
+                        ),
+                        onTap: _editMode ? pickCustomer : null,
+                      ),
+                    ),
                   ],
                 ),
               )),
@@ -100,6 +126,15 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
       ),
       floatingActionButton: _appointmentStored ? _buildFloatingActionButton() : null,
     );
+  }
+
+  void pickCustomer() {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => CustomerListAll())).then((customer) {
+      if (customer != null) {
+        _customerId = customer.id;
+        _customerName.text = customer.name;
+      }
+    });
   }
 
   FloatingActionButton _buildFloatingActionButton() {
@@ -131,12 +166,12 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
   }
 
   String _isNotEmpty(String value) {
-    if (value.isEmpty) return 'Please enter some text';
+    if (value == null || value.isEmpty) return "Please enter a value";
     return null;
   }
 
   Widget _buildIntervalWidget(BuildContext context, AppointmentInterval interval, Animation<double> animation,
-      int index) {
+    int index) {
     return FadeTransition(
       opacity: animation,
       child: ListTile(
@@ -152,25 +187,41 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
     } else {
       _startEditing();
     }
-    setState(() {
-      _editMode = !_editMode;
-    });
   }
 
   void _saveAppointment() {
     if (_formKey.currentState.validate()) {
-      BaseAppointment appointment = BaseAppointment(
-          _appointmentId, _description.text, DateTime.parse(_scheduledStart.text),
-          DateTime.parse(_scheduledEnd.text), DateTime.parse(_creation.text));
-      FirebaseRepository.instance.createAppointmentForTechnician(appointment).then((unused) {
-        setState(() {
-          _appointmentStored = true;
+      _deleteAppointmentForCustomerIfExisted().then((unused) {
+        BaseAppointment appointment = BaseAppointment(
+          _appointmentId,
+          _description.text,
+          DateTime.parse(_scheduledStart.text),
+          DateTime.parse(_scheduledEnd.text),
+          DateTime.parse(_creation.text),
+          _customerId);
+        FirebaseRepository.instance.createAppointmentForTechnician(appointment).then((unused) {
+          setState(() {
+            _appointmentStored = true;
+            _editMode = false;
+          });
         });
       });
     }
   }
 
-  void _startEditing() {}
+  Future<void> _deleteAppointmentForCustomerIfExisted() {
+    if (_originalCustomerId != null && _originalCustomerId != _customerId) {
+      return FirebaseRepository.instance.deleteAppointmentForCustomer(_appointmentId, _originalCustomerId);
+    } else {
+      return Future.value();
+    }
+  }
+
+  void _startEditing() {
+    setState(() {
+      _editMode = true;
+    });
+  }
 
   void _startMeasurement() {
     setState(() {

@@ -104,6 +104,18 @@ class FirebaseRepository {
 
   // -------------------- Customers
 
+  Future<Optional<Customer>> getCustomerById(String customerId) {
+    return _databaseReference
+      .child("customers/$customerId")
+      .once()
+      .then((snapshot) => buildItemFromSnapshot(snapshot, Customer.fromJsonMap));
+  }
+
+  Stream<ListOperation<Customer>> getAllCustomers() {
+    Query query = _databaseReference.child("customers");
+    return SingleCollectionOperationStreamBuilder(Customer.fromJsonMap, query).stream;
+  }
+
   Stream<ListOperation<Customer>> getCustomersOfTechnician() {
     Query idsQuery = _databaseReference.child("technicians/${technician.id}/customerIds");
     Query detailQuery = _databaseReference.child("customers");
@@ -112,8 +124,7 @@ class FirebaseRepository {
 
   Future<void> createCustomerForTechnician(Customer newCustomer) {
     return _createOrUpdateCustomer(newCustomer).then(
-            (unused) =>
-            _databaseReference.child("technicians/${technician.id}/customerIds/${newCustomer.id}").set(true));
+        (unused) => _databaseReference.child("technicians/${technician.id}/customerIds/${newCustomer.id}").set(true));
   }
 
   Future<void> _createOrUpdateCustomer(Customer newCustomer) {
@@ -142,14 +153,25 @@ class FirebaseRepository {
     return ForeignKeyCollectionOperationStreamBuilder(Appointment.fromJsonMap, idsQuery, detailQuery).stream;
   }
 
+  Stream<ListOperation<Appointment>> getAppointmentsOfCustomer(String customerId) {
+    Query idsQuery = _databaseReference.child("customers/$customerId/appointmentIds");
+    Query detailQuery = _databaseReference.child("appointments");
+    return ForeignKeyCollectionOperationStreamBuilder(Appointment.fromJsonMap, idsQuery, detailQuery).stream;
+  }
+
   Stream<ListOperation<AppointmentInterval>> getIntervalsOfAppointment(String appointmentId) {
     Query itemQuery = _databaseReference.child("appointments/$appointmentId/intervals");
     return SingleCollectionOperationStreamBuilder(AppointmentInterval.fromJsonMap, itemQuery).stream;
   }
 
   Future<void> createAppointmentForTechnician(BaseAppointment newAppointment) {
-    return _createOrUpdateAppointment(newAppointment).then((unused) =>
-        _databaseReference.child("technicians/${technician.id}/appointmentIds/${newAppointment.id}").set(true));
+    return _createOrUpdateAppointment(newAppointment)
+      .then((unused) =>
+      _databaseReference.child("technicians/${technician.id}/appointmentIds/${newAppointment.id}").set(true))
+      .then((unused) =>
+      _databaseReference
+        .child("customers/${newAppointment.customerId}/appointmentIds/${newAppointment.id}")
+        .set(true));
   }
 
   Future<void> _createOrUpdateAppointment(BaseAppointment newAppointment) {
@@ -167,5 +189,11 @@ class FirebaseRepository {
         .child("technicians/${technician.id}/appointmentIds/$appointmentId")
         .remove()
         .then((unused) => _databaseReference.child("appointments/$appointmentId").remove());
+  }
+
+  Future<void> deleteAppointmentForCustomer(String appointmentId, String customerId) {
+    return _databaseReference
+      .child("customers/$customerId/appointmentIds/$appointmentId")
+      .remove();
   }
 }

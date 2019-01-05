@@ -13,7 +13,8 @@ class Customer implements BaseEntity {
 
   const Customer._private(this.id, this.name, this.mail, this.phone, this.address);
 
-  Customer(this.name, this.mail, this.phone, this.address) : id = IdGenerator.generatePushChildName();
+  Customer(this.name, this.mail, this.phone, this.address)
+      : id = IdGenerator.generatePushChildName();
 
   static Customer fromJsonMap(String id, Map<dynamic, dynamic> map) {
     return Customer._private(
@@ -45,7 +46,8 @@ class Address implements JsonSerializable {
   final double latitude;
   final double longitude;
 
-  const Address(this.street, this.houseNumber, this.zip, this.city, this.country, this.latitude, this.longitude);
+  const Address(this.street, this.houseNumber, this.zip, this.city, this.country, this.latitude,
+      this.longitude);
 
   static Address fromJsonMap(Map<dynamic, dynamic> map) {
     return Address(
@@ -70,5 +72,14 @@ class Address implements JsonSerializable {
       "latitude": latitude,
       "longitude": longitude,
     };
+  }
+
+  @override
+  String toString() {
+    return "$street $houseNumber, $zip $city, $country";
+  }
+
+  String toMultiLineString() {
+    return "$street $houseNumber\n$zip $city\n$country";
   }
 }

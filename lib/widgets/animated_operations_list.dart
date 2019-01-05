@@ -165,7 +165,8 @@ class AnimatedOperationsListState<T> extends State<AnimatedOperationsList<T>> {
     _items.insert(index, item);
     if (_loaded) {
       // _animatedListKey.currentState is null if first render was not yet performed
-      _animatedListKey.currentState.insertItem(index, duration: widget.duration);
+      _animatedListKey.currentState?.insertItem(
+        index, duration: widget.duration);
     }
   }
 
