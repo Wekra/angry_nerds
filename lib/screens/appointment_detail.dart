@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:service_app/data/firebase_repository.dart';
 import 'package:service_app/data/model/appointment.dart';
-import 'package:service_app/screens/customer_list_all.dart';
+import 'package:service_app/screens/customer_selection.dart';
 import 'package:service_app/util/id_generator.dart';
 import 'package:service_app/widgets/animated_operations_list.dart';
 import 'package:service_app/widgets/pickers.dart';
@@ -129,7 +129,9 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
   }
 
   void pickCustomer() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => CustomerListAll())).then((customer) {
+    Navigator.push(
+      context, MaterialPageRoute(builder: (context) => CustomerSelection()))
+      .then((customer) {
       if (customer != null) {
         _customerId = customer.id;
         _customerName.text = customer.name;
