@@ -83,17 +83,25 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
                   enabled: _editMode,
                   controller: _description,
                   validator: _isNotEmpty,
-                  decoration: InputDecoration(labelText: "Description", disabledBorder: InputBorder.none),
+                  decoration:
+                      InputDecoration(labelText: "Description", disabledBorder: InputBorder.none),
                 ),
                 _buildDateTimeFormItem(context, _creation, "Creation"),
-                ListTile(
-                  enabled: _editMode,
-                  title: Text("Has status"),
-                  trailing: Checkbox(
-                    value: _status != NoteStatus.undefined,
-                    onChanged: _handleCheckboxClick,
-                  ),
-                ),
+                Container(
+                    child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      "Task",
+                      textAlign: TextAlign.start,
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    Container(
+                        child: Switch(
+                            onChanged: _handleCheckboxClick,
+                            value: _status != NoteStatus.undefined))
+                  ],
+                )),
               ],
             ),
           )),
@@ -108,7 +116,8 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
     }
   }
 
-  Widget _buildDateTimeFormItem(BuildContext context, TextEditingController controller, String labelText) {
+  Widget _buildDateTimeFormItem(
+      BuildContext context, TextEditingController controller, String labelText) {
     return Container(
       margin: EdgeInsets.only(bottom: 8),
       child: InkWell(
@@ -118,7 +127,8 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
           decoration: InputDecoration(labelText: labelText, disabledBorder: InputBorder.none),
         ),
         onTap: _editMode
-            ? () => showDateAndTimePicker(context).then((dateTime) => controller.text = dateTime.toIso8601String())
+            ? () => showDateAndTimePicker(context)
+                .then((dateTime) => controller.text = dateTime.toIso8601String())
             : null,
       ),
     );
@@ -132,7 +142,8 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
   void _onActionIconClicked() {
     if (_editMode) {
       if (_formKey.currentState.validate()) {
-        Note note = Note(_noteId, _title.text, _description.text, _status, DateTime.parse(_creation.text));
+        Note note =
+            Note(_noteId, _title.text, _description.text, _status, DateTime.parse(_creation.text));
         FirebaseRepository.instance.createNoteForTechnician(note).then((unused) {
           setState(() {
             _editMode = false;
