@@ -31,15 +31,17 @@ class StatusIndicatorWidget extends StatelessWidget {
     }
 
     return new Container(
-        child: new Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
-      new Icon(
-        icon,
-        color: color,
-        size: 20,
-        semanticLabel:
-            _status.toString().substring(0, 1).toUpperCase() + _status.toString().substring(1),
-      ),
-    ]));
+        child: new Directionality(
+            textDirection: TextDirection.ltr,
+            child: new Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
+              new Icon(
+                icon,
+                color: color,
+                size: 20,
+                semanticLabel: _status.toString().substring(0, 1).toUpperCase() +
+                    _status.toString().substring(1),
+              ),
+            ])));
   }
 }
 
