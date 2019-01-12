@@ -66,7 +66,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                     TextFormField(
                       enabled: _newOrder,
                       controller: _description,
-                      decoration: InputDecoration(labelText: "Description", disabledBorder: InputBorder.none),
+                      decoration: InputDecoration(
+                          labelText: "Description", disabledBorder: InputBorder.none),
                     ),
                   ],
                 ),
@@ -102,7 +103,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   void _selectPart() {
-    Navigator.push<Part>(context, MaterialPageRoute(builder: (context) => PartListPage())).then((Part part) {
+    Navigator.push<Part>(context, MaterialPageRoute(builder: (context) => PartListPage()))
+        .then((Part part) {
       _partBundles.add(PartBundle(1, PartUnit.amount, part.id));
       setState(() {});
     });
@@ -117,8 +119,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   void _createOrder() {
-    WarehouseOrder order = WarehouseOrder(
-        _orderId, _description.text, DateTime.now(), WarehouseOrderStatus.open, "Order submitted", _partBundles);
+    WarehouseOrder order = WarehouseOrder(_orderId, _description.text, DateTime.now(),
+        WarehouseOrderStatus.open, "Order submitted", _partBundles);
     FirebaseRepository.instance.createOrderForTechnician(order).then((unused) {
       setState(() {
         _newOrder = false;

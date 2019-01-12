@@ -4,6 +4,7 @@ import 'package:service_app/data/model/warehouse_order.dart';
 import 'package:service_app/screens/drawer_page.dart';
 import 'package:service_app/screens/order_detail.dart';
 import 'package:service_app/widgets/animated_operations_list.dart';
+import 'package:service_app/widgets/status_indicator.dart';
 
 class OrderListPage extends DrawerPage {
   @override
@@ -26,18 +27,24 @@ class _OrderListPageState extends State<OrderListPage> {
           stream: FirebaseRepository.instance.getOrdersOfTechnician(), itemBuilder: _buildListItem),
       floatingActionButton: new FloatingActionButton(
         child: new Icon(Icons.add),
-        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => OrderDetailPage(null))),
+        onPressed: () =>
+            Navigator.push(context, MaterialPageRoute(builder: (context) => OrderDetailPage(null))),
       ),
     );
   }
 
-  Widget _buildListItem(BuildContext context, WarehouseOrder order, Animation<double> animation, int index) {
+  Widget _buildListItem(
+      BuildContext context, WarehouseOrder order, Animation<double> animation, int index) {
     return FadeTransition(
       opacity: animation,
       child: ListTile(
         title: Text((order.description.isNotEmpty) ? order.description : "(No description)"),
-        subtitle: Text("${order.partBundles.length} part bundles, status: ${order.status.toString()}"),
-        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => OrderDetailPage(order))),
+        subtitle: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
+          Text("${order.partBundles.length} part bundles,"),
+          new StatusIndicatorWidget(order.status)
+        ]),
+        onTap: () => Navigator.push(
+            context, MaterialPageRoute(builder: (context) => OrderDetailPage(order))),
         onLongPress: () => _showDeleteDialog(context, order),
       ),
     );
