@@ -103,7 +103,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   void _selectPart() {
     Navigator.push<Part>(context, MaterialPageRoute(builder: (context) => PartListPage())).then((Part part) {
-      _partBundles.add(PartBundle(1, PartUnit.amount, part.id));
+      _partBundles.add(PartBundle(1, part.id));
       setState(() {});
     });
   }
@@ -112,7 +112,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     PartBundle bundle = _partBundles[index];
     return ListTile(
       title: Text("Part ID: ${bundle.partId}"),
-      subtitle: Text("Quantity: ${bundle.quantity}, unit: ${bundle.unit}"),
+      subtitle: Text("Quantity: ${bundle.quantity}"),
     );
   }
 
