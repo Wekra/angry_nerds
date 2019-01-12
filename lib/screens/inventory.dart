@@ -25,16 +25,16 @@ class _InventoryPageState extends State<InventoryPage> {
     return new DefaultTabController(
         length: 2,
         child: new Scaffold(
-          appBar: AppBar(
-              //title: Text("Inventory title"),
-              bottom:
-                  new TabBar(tabs: <Widget>[new Tab(text: "Orders"), new Tab(text: "Warehouse")])),
-          body: new TabBarView(children: <Widget>[
-            new InventoryOrdersTab(),
-            new Center(
-              child: Text("Here goes the warehouse"),
-            )
-          ]),
-        ));
+            appBar: new TabBar(
+              tabs: <Widget>[new Tab(text: "Orders"), new Tab(text: "Warehouse")],
+            ),
+            body: new TabBarView(
+              children: <Widget>[
+                new InventoryOrdersTab(),
+                new Center(
+                  child: Text("Here goes the warehouse"),
+                )
+              ],
+            )));
   }
 }
