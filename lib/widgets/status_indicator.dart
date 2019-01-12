@@ -44,24 +44,3 @@ class StatusIndicatorWidget extends StatelessWidget {
             ])));
   }
 }
-
-class StatusLED extends CustomPainter {
-  final double _radius;
-  final Color _color;
-  StatusLED(this._radius, this._color);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    canvas.drawCircle(
-        Offset(0, 0),
-        _radius,
-        new Paint()
-          ..color = _color != Colors.transparent ? _color : Colors.black
-          ..style = _color == Colors.transparent ? PaintingStyle.stroke : PaintingStyle.fill);
-  }
-
-  @override
-  bool shouldRepaint(StatusLED oldDelegate) {
-    return oldDelegate != this;
-  }
-}
