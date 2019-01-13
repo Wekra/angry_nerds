@@ -55,7 +55,7 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> with Sing
     _floatingActionButton = _buildFloatingActionButton();
 
     _appointmentSubscription =
-      FirebaseRepository.instance.getAppointmentDataById(_appointmentId).listen(_applyAppointmentOrFinish);
+        FirebaseRepository.instance.getAppointmentDataById(_appointmentId).listen(_applyAppointmentOrFinish);
   }
 
   void _applyAppointmentOrFinish(Optional<AppointmentData> appointmentOpt) {
@@ -179,23 +179,23 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> with Sing
 
       case 1:
         return FloatingActionButton(
-          child: new Icon(Icons.add),
+          child: Icon(Icons.add),
           onPressed: _selectPart,
         );
 
       case 2:
         return FloatingActionButton(
-          child: Icon(_measurementStart != null ? Icons.stop : Icons.play_arrow),
-          onPressed: () {
-            if (!_measurementSaving) {
-              if (_measurementStart != null) {
-                _finishMeasurement();
-              } else {
-                _measurementStart = DateTime.now();
+            child: Icon(_measurementStart != null ? Icons.stop : Icons.play_arrow),
+            onPressed: () {
+              if (!_measurementSaving) {
+                if (_measurementStart != null) {
+                  _finishMeasurement();
+                } else {
+                  _measurementStart = DateTime.now();
+                }
+                _refreshFloatingActionButton();
               }
-              _refreshFloatingActionButton();
-            }
-          });
+            });
 
       default:
         return null;
@@ -238,8 +238,8 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> with Sing
     });
   }
 
-  Widget _buildIntervalWidget(BuildContext context, AppointmentInterval interval, Animation<double> animation,
-    int index) {
+  Widget _buildIntervalWidget(
+      BuildContext context, AppointmentInterval interval, Animation<double> animation, int index) {
     return FadeTransition(
       opacity: animation,
       child: AppointmentIntervalListTile(
@@ -251,7 +251,7 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> with Sing
   void _finishMeasurement() {
     _measurementSaving = true;
     DateTime measurementEnd = DateTime.now();
-    AppointmentInterval interval = new AppointmentInterval(_measurementStart, measurementEnd);
+    AppointmentInterval interval = AppointmentInterval(_measurementStart, measurementEnd);
     _measurementStart = null;
     FirebaseRepository.instance.addAppointmentInterval(_appointmentId, interval).then((unused) {
       _measurementSaving = false;
@@ -260,7 +260,7 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> with Sing
 
   void _completeAppointment() {
     Navigator.push<String>(context, MaterialPageRoute(builder: (context) => SignaturePadPage()))
-      .then((String signatureBase64) {
+        .then((String signatureBase64) {
       if (signatureBase64 != null) {
         FirebaseRepository.instance.completeAppointment(_appointmentId, signatureBase64);
       }

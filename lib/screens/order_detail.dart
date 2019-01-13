@@ -51,7 +51,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
+    return Scaffold(
       appBar: AppBar(
         title: Text("Order details"),
         actions: _buildActions(),
@@ -59,19 +59,23 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       body: Column(
         children: <Widget>[
           Container(
-              padding: EdgeInsets.all(16),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: <Widget>[
-                    TextFormField(
-                      enabled: _newOrder,
-                      controller: _description,
-                      decoration: InputDecoration(labelText: "Description", disabledBorder: InputBorder.none),
+            padding: EdgeInsets.all(16),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: <Widget>[
+                  TextFormField(
+                    enabled: _newOrder,
+                    controller: _description,
+                    decoration: InputDecoration(
+                      labelText: "Description",
+                      disabledBorder: InputBorder.none,
                     ),
-                  ],
-                ),
-              )),
+                  ),
+                ],
+              ),
+            ),
+          ),
           Divider(),
           Expanded(
             child: ListView.builder(
@@ -97,7 +101,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   Widget _buildFloatingActionButton() {
     return FloatingActionButton(
-      child: new Icon(Icons.add),
+      child: Icon(Icons.add),
       onPressed: _selectPart,
     );
   }
