@@ -37,5 +37,9 @@ class ServiceProduct implements BaseEntity {
       "customer": customer
     };
   }
+
+  @override
+  // TODO: implement id
+  String get id => null;
 }
 

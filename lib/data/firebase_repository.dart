@@ -135,13 +135,13 @@ class FirebaseRepository {
 
   // -------------------- Customer details
 
-  Stream<ListOperation<ServiceProduct>> getServiceProductsOfCustomer(int customerId) {
+  Stream<ListOperation<ServiceProduct>> getServiceProductsOfCustomer(String customerId) {
     Query idsQuery = _databaseReference.child("customers/$customerId/serviceProductIds");
     Query detailQuery = _databaseReference.child("serviceProducts");
     return ForeignKeyCollectionOperationStreamBuilder(ServiceProduct.fromJsonMap, idsQuery, detailQuery).stream;
   }
 
-  Stream<ListOperation<Device>> getDevicesOfCustomer(int customerId) {
+  Stream<ListOperation<Device>> getDevicesOfCustomer(String customerId) {
     Query idsQuery = _databaseReference.child("customers/$customerId/deviceIds");
     Query detailQuery = _databaseReference.child("devices");
     return ForeignKeyCollectionOperationStreamBuilder(Device.fromJsonMap, idsQuery, detailQuery).stream;
@@ -224,4 +224,6 @@ class FirebaseRepository {
   Future<void> deleteAppointmentForCustomer(String appointmentId, String customerId) {
     return _databaseReference.child("customers/$customerId/appointmentIds/$appointmentId").remove();
   }
+
+
 }
