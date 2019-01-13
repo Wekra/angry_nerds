@@ -11,14 +11,10 @@ class AppointmentEditPage extends StatefulWidget {
   const AppointmentEditPage(this.appointment);
 
   @override
-  _AppointmentEditPageState createState() {
-    return _AppointmentEditPageState(appointment);
-  }
+  _AppointmentEditPageState createState() => _AppointmentEditPageState(appointment);
 }
 
 class _AppointmentEditPageState extends State<AppointmentEditPage> {
-  DateTime measurementStart;
-
   final _formKey = GlobalKey<FormState>();
 
   String _appointmentId;
@@ -85,9 +81,9 @@ class _AppointmentEditPageState extends State<AppointmentEditPage> {
                 validator: _isNotEmpty,
                 decoration: InputDecoration(labelText: "Description", disabledBorder: InputBorder.none),
               ),
-              _buildDateTimeFormItem(context, _scheduledStart, "Scheduled start"),
-              _buildDateTimeFormItem(context, _scheduledEnd, "Scheduled end"),
-              _buildDateTimeFormItem(context, _creation, "Creation"),
+              _buildDateTimeFormItem(context, _scheduledStart, "Scheduled start", null),
+              _buildDateTimeFormItem(context, _scheduledEnd, "Scheduled end", _isValidEndDate),
+              _buildDateTimeFormItem(context, _creation, "Creation", null),
               Container(
                 margin: EdgeInsets.only(bottom: 8),
                 child: InkWell(
@@ -116,7 +112,8 @@ class _AppointmentEditPageState extends State<AppointmentEditPage> {
     });
   }
 
-  Widget _buildDateTimeFormItem(BuildContext context, TextEditingController controller, String labelText) {
+  Widget _buildDateTimeFormItem(
+      BuildContext context, TextEditingController controller, String labelText, FormFieldValidator<String> validator) {
     return Container(
       margin: EdgeInsets.only(bottom: 8),
       child: InkWell(
@@ -124,14 +121,26 @@ class _AppointmentEditPageState extends State<AppointmentEditPage> {
           enabled: false,
           controller: controller,
           decoration: InputDecoration(labelText: labelText, disabledBorder: InputBorder.none),
+          validator: validator,
         ),
-        onTap: () => showDateAndTimePicker(context).then((dateTime) => controller.text = dateTime.toIso8601String()),
+        onTap: () => showDateAndTimePicker(context).then((dateTime) {
+          if (dateTime != null) {
+            controller.text = dateTime.toIso8601String();
+          }
+        }),
       ),
     );
   }
 
   String _isNotEmpty(String value) {
-    if (value == null || value.isEmpty) return "Please enter a value";
+    if (value == null || value.isEmpty) return "This field cannot be empty";
+    return null;
+  }
+
+  String _isValidEndDate(String value) {
+    if (!DateTime.parse(value).isAfter(DateTime.parse(_scheduledStart.text))) {
+      return "End must be after start";
+    }
     return null;
   }
 
