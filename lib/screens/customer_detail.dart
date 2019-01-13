@@ -14,23 +14,27 @@ class CustomerDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-        length: 3,
+      length: 3,
       child: Scaffold(
-          appBar: AppBar(
-              title: Text("Customer: ${_customer.name}"),
-            bottom: TabBar(
-              tabs: <Widget>[
-                Tab(text: "Data"),
-                Tab(text: "Appointments"),
-                Tab(text: "Devices"),
-              ],
-            )),
-        body: TabBarView(children: <Widget>[
-          _CustomerDataTab(_customer),
-          _CustomerAppointmentTab(_customer),
-          Text("Here goes the list of devices"),
-          ]),
-        ));
+        appBar: AppBar(
+          title: Text("Customer: ${_customer.name}"),
+          bottom: TabBar(
+            tabs: <Widget>[
+              Tab(text: "Data"),
+              Tab(text: "Appointments"),
+              Tab(text: "Devices"),
+            ],
+          ),
+        ),
+        body: TabBarView(
+          children: <Widget>[
+            _CustomerDataTab(_customer),
+            _CustomerAppointmentTab(_customer),
+            Text("Here goes the list of devices"),
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -76,7 +80,7 @@ class _CustomerDataTab extends StatelessWidget {
               ),
             ),
           ),
-        )
+        ),
       ],
     );
   }
@@ -85,7 +89,8 @@ class _CustomerDataTab extends StatelessWidget {
     controller.addMarker(MarkerOptions(
       position: LatLng(_customer.address.latitude, _customer.address.longitude),
       infoWindowText: InfoWindowText("${_customer.name}", "${_customer.address}"),
-      icon: BitmapDescriptor.defaultMarker));
+      icon: BitmapDescriptor.defaultMarker,
+    ));
   }
 }
 
