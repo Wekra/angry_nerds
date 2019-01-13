@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:service_app/data/firebase_repository.dart';
 import 'package:service_app/data/model/note.dart';
 import 'package:service_app/util/id_generator.dart';
-import 'package:service_app/widgets/pickers.dart';
 
 class NoteDetailPage extends StatefulWidget {
   final Note note;
@@ -24,7 +23,7 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
   final TextEditingController _title = TextEditingController();
   final TextEditingController _description = TextEditingController();
   NoteStatus _status;
-  final TextEditingController _creation = TextEditingController();
+  DateTime _creation;
 
   _NoteDetailPageState(Note note) {
     if (note != null) {
@@ -36,59 +35,59 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
 
   void _initForExistingNote(Note note) {
     _editMode = false;
-
     _noteId = note.id;
     _title.text = note.title;
     _description.text = note.description;
     _status = note.status;
-    _creation.text = note.creationDateTime.toIso8601String();
+    _creation = note.creationDateTime;
   }
 
   void _initForNewNote() {
-    DateTime now = DateTime.now();
     _editMode = true;
-
     _noteId = IdGenerator.generatePushChildName();
     _title.text = "";
     _description.text = "";
     _status = NoteStatus.undefined;
-    _creation.text = now.toIso8601String();
+    _creation = DateTime.now();
   }
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
+    return Scaffold(
       appBar: AppBar(
         title: Text("Note details"),
         actions: <Widget>[
           IconButton(
             icon: Icon(_editMode ? Icons.check : Icons.edit),
             onPressed: _onActionIconClicked,
-          )
+          ),
         ],
       ),
       body: Container(
-          padding: EdgeInsets.all(16),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: <Widget>[
-                TextFormField(
-                  enabled: _editMode,
-                  controller: _title,
-                  validator: _isNotEmpty,
-                  decoration: InputDecoration(labelText: "Title", disabledBorder: InputBorder.none),
+        padding: EdgeInsets.all(16),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: <Widget>[
+              TextFormField(
+                enabled: _editMode,
+                controller: _title,
+                validator: _isNotEmpty,
+                decoration: InputDecoration(
+                  labelText: "Title",
+                  disabledBorder: InputBorder.none,
                 ),
-                TextFormField(
-                  enabled: _editMode,
-                  controller: _description,
-                  validator: _isNotEmpty,
-                  decoration:
-                      InputDecoration(labelText: "Description", disabledBorder: InputBorder.none),
+              ),
+              TextFormField(
+                enabled: false,
+                initialValue: _creation.toIso8601String(),
+                decoration: InputDecoration(
+                  labelText: "Creation",
+                  disabledBorder: InputBorder.none,
                 ),
-                _buildDateTimeFormItem(context, _creation, "Creation"),
-                Container(
-                    child: Row(
+              ),
+              Container(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
@@ -97,14 +96,36 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
                       style: TextStyle(fontSize: 16),
                     ),
                     Container(
-                        child: Switch(
-                            onChanged: _handleCheckboxClick,
-                            value: _status != NoteStatus.undefined))
+                      child: Switch(
+                        onChanged: _handleCheckboxClick,
+                        value: _status != NoteStatus.undefined,
+                      ),
+                    )
                   ],
-                )),
-              ],
-            ),
-          )),
+                ),
+              ),
+              TextFormField(
+                enabled: false,
+                initialValue: getNoteStatusString(_status),
+                decoration: InputDecoration(
+                  labelText: "Status",
+                  disabledBorder: InputBorder.none,
+                ),
+              ),
+              TextFormField(
+                enabled: _editMode,
+                maxLines: 10,
+                controller: _description,
+                validator: _isNotEmpty,
+                decoration: InputDecoration(
+                  labelText: "Description",
+                  disabledBorder: InputBorder.none,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -116,34 +137,15 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
     }
   }
 
-  Widget _buildDateTimeFormItem(
-      BuildContext context, TextEditingController controller, String labelText) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 8),
-      child: InkWell(
-        child: TextFormField(
-          enabled: false,
-          controller: controller,
-          decoration: InputDecoration(labelText: labelText, disabledBorder: InputBorder.none),
-        ),
-        onTap: _editMode
-            ? () => showDateAndTimePicker(context)
-                .then((dateTime) => controller.text = dateTime.toIso8601String())
-            : null,
-      ),
-    );
-  }
-
   String _isNotEmpty(String value) {
-    if (value.isEmpty) return 'Please enter some text';
+    if (value.isEmpty) return "This field cannot be empty";
     return null;
   }
 
   void _onActionIconClicked() {
     if (_editMode) {
       if (_formKey.currentState.validate()) {
-        Note note =
-            Note(_noteId, _title.text, _description.text, _status, DateTime.parse(_creation.text));
+        Note note = Note(_noteId, _title.text, _description.text, _status, _creation);
         FirebaseRepository.instance.createNoteForTechnician(note).then((unused) {
           setState(() {
             _editMode = false;

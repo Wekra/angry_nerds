@@ -33,3 +33,16 @@ class Note implements BaseEntity {
 }
 
 enum NoteStatus { undefined, open, completed }
+
+String getNoteStatusString(NoteStatus status) {
+  switch (status) {
+    case NoteStatus.undefined:
+      return "(none)";
+    case NoteStatus.open:
+      return "open";
+    case NoteStatus.completed:
+      return "completed";
+    default:
+      throw AssertionError();
+  }
+}

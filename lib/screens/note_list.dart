@@ -6,7 +6,6 @@ import 'package:service_app/data/firebase_repository.dart';
 import 'package:service_app/data/model/note.dart';
 import 'package:service_app/screens/drawer_page.dart';
 import 'package:service_app/screens/note_detail.dart';
-import 'package:service_app/screens/signature_pad.dart';
 import 'package:service_app/widgets/animated_operations_list.dart';
 
 class NoteListPage extends DrawerPage {
@@ -27,12 +26,14 @@ class _NoteListPageState extends State<NoteListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
+    return Scaffold(
       body: AnimatedOperationsList(
-        stream: FirebaseRepository.instance.getNotesOfTechnician(), itemBuilder: _buildNoteWidget),
-      floatingActionButton: new FloatingActionButton(
-        child: new Icon(Icons.add),
-        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SignaturePadPage())),
+        stream: FirebaseRepository.instance.getNotesOfTechnician(),
+        itemBuilder: _buildNoteWidget,
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () => _openEditNoteScreen(null),
       ),
     );
   }
@@ -58,17 +59,13 @@ class _NoteListPageState extends State<NoteListPage> {
           caption: "Delete",
           color: Colors.red,
           icon: Icons.delete,
-          onTap: () {},
         ),
       ],
       secondaryActions: <Widget>[
         IconSlideAction(
           caption: "Edit",
-          color: Theme
-            .of(context)
-            .accentColor,
+          color: Theme.of(context).accentColor,
           icon: Icons.edit,
-          onTap: () {},
         ),
       ],
       slideToDismissDelegate: SlideToDismissDrawerDelegate(
@@ -82,7 +79,8 @@ class _NoteListPageState extends State<NoteListPage> {
               return false;
           }
         },
-        dismissThresholds: { // Close actions immediately after swiping
+        dismissThresholds: {
+          // Close actions immediately after swiping
           SlideActionType.primary: 0,
           SlideActionType.secondary: 0,
         },
