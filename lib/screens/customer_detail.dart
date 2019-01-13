@@ -3,20 +3,20 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:service_app/data/firebase_repository.dart';
 import 'package:service_app/data/model/appointment.dart';
 import 'package:service_app/data/model/customer.dart';
+import 'package:service_app/data/model/service_product.dart';
 import 'package:service_app/widgets/animated_operations_list.dart';
 import 'package:service_app/widgets/appointment.dart';
-import 'package:service_app/data/model/service_product.dart';
 import 'package:service_app/widgets/customer_service_product.dart';
-
 
 class CustomerDetailPage extends StatelessWidget {
   final Customer _customer;
-  final ServiceProduct _serviceProduct;
 
-  CustomerDetailPage(this._customer, this._serviceProduct);
+
+  CustomerDetailPage(this._customer);
 
   @override
   Widget build(BuildContext context) {
+    ServiceProduct _serviceProduct;
     return DefaultTabController(
       length: 3,
       child: Scaffold(
@@ -34,7 +34,7 @@ class CustomerDetailPage extends StatelessWidget {
           children: <Widget>[
             CustomerDataTab(_customer),
             CustomerAppointmentTab(_customer),
-            CustomerServiceProduct(_serviceProduct),
+            CustomerServiceProductTab(_customer),
           ],
         ),
       ),
@@ -112,7 +112,7 @@ class CustomerAppointmentTab extends StatelessWidget {
   }
 
   Widget _buildListItem(
-      BuildContext context, AppointmentData appointment, Animation<double> animation, int index) {
+    BuildContext context, AppointmentData appointment, Animation<double> animation, int index) {
     return FadeTransition(
       opacity: animation,
       child: AppointmentDataListTile(
@@ -121,3 +121,29 @@ class CustomerAppointmentTab extends StatelessWidget {
     );
   }
 }
+
+class CustomerServiceProductTab extends StatelessWidget {
+  final Customer _customer;
+
+  const CustomerServiceProductTab(this._customer);
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedOperationsList(
+      stream: FirebaseRepository.instance.getServiceProductsOfCustomer(_customer.id),
+    );
+  }
+
+  Widget _buildListItem(
+    BuildContext context, ServiceProduct serviceProduct, Animation<double> animation, int index) {
+    return FadeTransition(
+      opacity: animation,
+      child: CustomerServiceProduct(
+        serviceProduct,
+      ),
+    );
+  }
+
+
+}
+
