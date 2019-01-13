@@ -13,6 +13,7 @@ import 'package:service_app/screens/customer_detail.dart';
 import 'package:service_app/screens/part_list.dart';
 import 'package:service_app/screens/signature_pad.dart';
 import 'package:service_app/widgets/animated_operations_list.dart';
+import 'package:service_app/widgets/appointment.dart';
 
 class AppointmentDetailPage extends StatefulWidget {
   final String _appointmentId;
@@ -232,9 +233,8 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> with Sing
     int index) {
     return FadeTransition(
       opacity: animation,
-      child: ListTile(
-        title: Text("Start: ${interval.startDateTime}"),
-        subtitle: Text("End: ${interval.endDateTime}"),
+      child: AppointmentIntervalListTile(
+        interval,
       ),
     );
   }

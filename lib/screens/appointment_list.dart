@@ -49,7 +49,7 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
     return FadeTransition(
       opacity: animation,
       child: AppointmentDataListTile(
-        appointment: appointment,
+        appointment,
         onLongPress: () => _showDeleteDialog(context, appointment),
       ),
     );

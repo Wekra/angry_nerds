@@ -20,7 +20,7 @@ class CustomerAppointmentTab extends StatelessWidget {
     return FadeTransition(
       opacity: animation,
       child: AppointmentDataListTile(
-        appointment: appointment,
+        appointment,
       ),
     );
   }
