@@ -10,6 +10,6 @@ trim_trailing_whitespace = true
 insert_final_newline = true
 max_line_length = 120
 
-[*.{md}]
+[*.md]
 trim_trailing_whitespace = false
 insert_final_newline = false
