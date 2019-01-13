@@ -5,11 +5,15 @@ import 'package:service_app/data/model/appointment.dart';
 import 'package:service_app/data/model/customer.dart';
 import 'package:service_app/widgets/animated_operations_list.dart';
 import 'package:service_app/widgets/appointment.dart';
+import 'package:service_app/data/model/service_product.dart';
+import 'package:service_app/widgets/customer_service_product.dart';
+
 
 class CustomerDetailPage extends StatelessWidget {
   final Customer _customer;
+  final ServiceProduct _serviceProduct;
 
-  CustomerDetailPage(this._customer);
+  CustomerDetailPage(this._customer, this._serviceProduct);
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +34,7 @@ class CustomerDetailPage extends StatelessWidget {
           children: <Widget>[
             CustomerDataTab(_customer),
             CustomerAppointmentTab(_customer),
-            Text("Here goes the list of devices"),
+            CustomerServiceProduct(_serviceProduct),
           ],
         ),
       ),
