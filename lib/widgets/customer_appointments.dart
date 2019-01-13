@@ -13,18 +13,18 @@ class CustomerAppointmentTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnimatedOperationsList(
-        stream: FirebaseRepository.instance.getAppointmentsOfCustomer(_customer.id), itemBuilder: _buildListItem);
+      stream: FirebaseRepository.instance.getAppointmentDataOfCustomer(_customer.id), itemBuilder: _buildListItem);
   }
 
-  Widget _buildListItem(BuildContext context, Appointment appointment, Animation<double> animation, int index) {
+  Widget _buildListItem(BuildContext context, AppointmentData appointment, Animation<double> animation, int index) {
     return FadeTransition(
       opacity: animation,
       child: ListTile(
         title: Text(appointment.description),
         subtitle: Text(
-            "Starts at ${appointment.scheduledStartDateTime.toString()}, has ${appointment.intervals.length} intervals"),
+          "Starts at ${appointment.scheduledStartDateTime.toString()}"),
         onTap: () =>
-            Navigator.push(context, MaterialPageRoute(builder: (context) => AppointmentDetailPage(appointment))),
+          Navigator.push(context, MaterialPageRoute(builder: (context) => AppointmentDetailPage(appointment.id))),
       ),
     );
   }
