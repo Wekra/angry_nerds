@@ -5,6 +5,7 @@ import 'package:service_app/screens/appointment_detail.dart';
 import 'package:service_app/screens/appointment_edit.dart';
 import 'package:service_app/screens/drawer_page.dart';
 import 'package:service_app/widgets/animated_operations_list.dart';
+import 'package:service_app/widgets/appointment.dart';
 
 class AppointmentListPage extends DrawerPage {
   @override
@@ -47,11 +48,8 @@ class _AppointmentListPageState extends State<AppointmentListPage> {
     int index) {
     return FadeTransition(
       opacity: animation,
-      child: ListTile(
-        title: Text(appointment.description),
-        subtitle: Text("Starts at ${appointment.scheduledStartDateTime.toString()}"),
-        onTap: () =>
-          Navigator.push(context, MaterialPageRoute(builder: (context) => AppointmentDetailPage(appointment.id))),
+      child: AppointmentDataListTile(
+        appointment: appointment,
         onLongPress: () => _showDeleteDialog(context, appointment),
       ),
     );

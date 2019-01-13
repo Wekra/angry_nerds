@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:service_app/data/firebase_repository.dart';
 import 'package:service_app/data/model/appointment.dart';
 import 'package:service_app/data/model/customer.dart';
-import 'package:service_app/screens/appointment_detail.dart';
 import 'package:service_app/widgets/animated_operations_list.dart';
+import 'package:service_app/widgets/appointment.dart';
 
 class CustomerAppointmentTab extends StatelessWidget {
   final Customer _customer;
@@ -19,12 +19,8 @@ class CustomerAppointmentTab extends StatelessWidget {
   Widget _buildListItem(BuildContext context, AppointmentData appointment, Animation<double> animation, int index) {
     return FadeTransition(
       opacity: animation,
-      child: ListTile(
-        title: Text(appointment.description),
-        subtitle: Text(
-          "Starts at ${appointment.scheduledStartDateTime.toString()}"),
-        onTap: () =>
-          Navigator.push(context, MaterialPageRoute(builder: (context) => AppointmentDetailPage(appointment.id))),
+      child: AppointmentDataListTile(
+        appointment: appointment,
       ),
     );
   }
