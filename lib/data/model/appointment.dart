@@ -1,7 +1,7 @@
 import 'package:service_app/util/base_entity.dart';
 import 'package:service_app/util/id_generator.dart';
 
-class BaseAppointment implements BaseEntity {
+class AppointmentData implements BaseEntity {
   @override
   final String id;
 
@@ -10,9 +10,24 @@ class BaseAppointment implements BaseEntity {
   final DateTime scheduledEndDateTime;
   final DateTime creationDateTime;
   final String customerId;
+  final DateTime signatureDateTime;
+  final String signatureBase64;
 
-  const BaseAppointment(this.id, this.description, this.scheduledStartDateTime, this.scheduledEndDateTime,
-    this.creationDateTime, this.customerId);
+  const AppointmentData(this.id, this.description, this.scheduledStartDateTime, this.scheduledEndDateTime,
+    this.creationDateTime, this.customerId, this.signatureDateTime, this.signatureBase64);
+
+  static AppointmentData fromJsonMap(String id, Map<dynamic, dynamic> map) {
+    return AppointmentData(
+      id,
+      map["description"],
+      DateTime.parse(map["scheduledStartDateTime"]),
+      DateTime.parse(map["scheduledEndDateTime"]),
+      DateTime.parse(map["creationDateTime"]),
+      map["customerId"],
+      map.containsKey("signatureDateTime") ? DateTime.parse(map["signatureDateTime"]) : null,
+      map["signatureBase64"],
+    );
+  }
 
   @override
   Map<String, dynamic> toJsonMap() {
@@ -22,34 +37,9 @@ class BaseAppointment implements BaseEntity {
       "scheduledEndDateTime": scheduledEndDateTime.toIso8601String(),
       "creationDateTime": creationDateTime.toIso8601String(),
       "customerId": customerId,
+      "signatureDateTime": signatureDateTime?.toIso8601String(),
+      "signatureBase64": signatureBase64,
     };
-  }
-}
-
-class Appointment extends BaseAppointment {
-  final List<AppointmentInterval> intervals;
-
-  Appointment(String id, String description, DateTime scheduledStartDateTime, DateTime scheduledEndDateTime,
-    DateTime creationDateTime, String customerId, this.intervals)
-    : super(id, description, scheduledStartDateTime, scheduledEndDateTime, creationDateTime, customerId);
-
-  static Appointment fromJsonMap(String id, Map<dynamic, dynamic> map) {
-    return Appointment(
-      id,
-      map["description"],
-      DateTime.parse(map["scheduledStartDateTime"]),
-      DateTime.parse(map["scheduledEndDateTime"]),
-      DateTime.parse(map["creationDateTime"]),
-      map["customerId"],
-      BaseEntity.fromMap(map["intervals"], AppointmentInterval.fromJsonMap),
-    );
-  }
-
-  @override
-  Map<String, dynamic> toJsonMap() {
-    Map<String, dynamic> map = super.toJsonMap();
-    map["intervals"] = BaseEntity.toMap(intervals);
-    return map;
   }
 }
 

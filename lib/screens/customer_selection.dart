@@ -3,7 +3,7 @@ import 'package:service_app/data/firebase_repository.dart';
 import 'package:service_app/data/model/customer.dart';
 import 'package:service_app/widgets/animated_operations_list.dart';
 
-class CustomerListAll extends StatelessWidget {
+class CustomerSelection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(

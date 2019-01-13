@@ -95,6 +95,7 @@ class ForeignKeyCollectionOperationStreamBuilder<T extends BaseEntity> extends B
     listen(itemIdsQuery.onValue, _onValue, onError: _handleError);
 
     listen(itemDetailQuery.onChildChanged, _onItemChanged, onError: _handleError);
+    listen(itemDetailQuery.onChildRemoved, _onItemRemoved, onError: _handleError);
   }
 
   void _onItemIdAdded(Event event) {
@@ -144,6 +145,15 @@ class ForeignKeyCollectionOperationStreamBuilder<T extends BaseEntity> extends B
         _controller.add(UpdateOperation(index, item));
       }
     });
+  }
+
+  void _onItemRemoved(Event event) {
+    final String id = event.snapshot.key;
+    final int index = _indexForIdOrNull(id);
+    if (index != null) {
+      final T item = _items.removeAt(index);
+      _controller.add(DeleteOperation(index, item));
+    }
   }
 }
 

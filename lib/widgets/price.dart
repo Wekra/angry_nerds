@@ -4,9 +4,8 @@ import 'package:service_app/data/model/part.dart';
 class PriceWidget extends StatelessWidget {
   final int price;
   final Currency currency;
-  final TextStyle style;
 
-  const PriceWidget(this.price, this.currency, this.style);
+  const PriceWidget(this.price, this.currency);
 
   @override
   Widget build(BuildContext context) {
@@ -23,11 +22,10 @@ class PriceWidget extends StatelessWidget {
         break;
     }
 
-    return new Text(
+    return Text(
       finalText,
       textAlign: TextAlign.start,
       textDirection: TextDirection.ltr,
-      style: style,
     );
   }
 }

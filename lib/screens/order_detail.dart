@@ -5,6 +5,7 @@ import 'package:service_app/data/model/part_bundle.dart';
 import 'package:service_app/data/model/warehouse_order.dart';
 import 'package:service_app/screens/part_list.dart';
 import 'package:service_app/util/id_generator.dart';
+import 'package:service_app/widgets/part.dart';
 
 class OrderDetailPage extends StatefulWidget {
   final WarehouseOrder order;
@@ -50,7 +51,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
+    return Scaffold(
       appBar: AppBar(
         title: Text("Order details"),
         actions: _buildActions(),
@@ -58,19 +59,23 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       body: Column(
         children: <Widget>[
           Container(
-              padding: EdgeInsets.all(16),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: <Widget>[
-                    TextFormField(
-                      enabled: _newOrder,
-                      controller: _description,
-                      decoration: InputDecoration(labelText: "Description", disabledBorder: InputBorder.none),
+            padding: EdgeInsets.all(16),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: <Widget>[
+                  TextFormField(
+                    enabled: _newOrder,
+                    controller: _description,
+                    decoration: InputDecoration(
+                      labelText: "Description",
+                      disabledBorder: InputBorder.none,
                     ),
-                  ],
-                ),
-              )),
+                  ),
+                ],
+              ),
+            ),
+          ),
           Divider(),
           Expanded(
             child: ListView.builder(
@@ -96,23 +101,29 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   Widget _buildFloatingActionButton() {
     return FloatingActionButton(
-      child: new Icon(Icons.add),
+      child: Icon(Icons.add),
       onPressed: _selectPart,
     );
   }
 
   void _selectPart() {
     Navigator.push<Part>(context, MaterialPageRoute(builder: (context) => PartListPage())).then((Part part) {
-      _partBundles.add(PartBundle(1, PartUnit.amount, part.id));
-      setState(() {});
+      setState(() {
+        _partBundles.add(PartBundle(1, part.id));
+      });
     });
   }
 
   Widget _buildPartBundleWidget(BuildContext context, int index) {
     PartBundle bundle = _partBundles[index];
-    return ListTile(
-      title: Text("Part ID: ${bundle.partId}"),
-      subtitle: Text("Quantity: ${bundle.quantity}, unit: ${bundle.unit}"),
+    return PartBundleWidget(
+      bundle,
+      modifiable: _newOrder,
+      onBundleChanged: (PartBundle newBundle) {
+        setState(() {
+          _partBundles[index] = newBundle;
+        });
+      },
     );
   }
 
