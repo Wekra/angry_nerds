@@ -1,25 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:service_app/data/firebase_repository.dart';
 import 'package:service_app/data/model/warehouse_order.dart';
-import 'package:service_app/screens/drawer_page.dart';
 import 'package:service_app/screens/order_detail.dart';
 import 'package:service_app/widgets/animated_operations_list.dart';
 import 'package:service_app/widgets/status_indicator.dart';
 
-class OrderListPage extends DrawerPage {
-  @override
-  _OrderListPageState createState() {
-    return _OrderListPageState();
-  }
-
-  @override
-  String get title => "Orders";
-
-  @override
-  IconData get icon => Icons.local_grocery_store;
-}
-
-class _OrderListPageState extends State<OrderListPage> {
+class InventoryOrdersTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(

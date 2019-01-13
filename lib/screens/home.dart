@@ -3,6 +3,7 @@ import 'package:service_app/data/firebase_repository.dart';
 import 'package:service_app/screens/appointment_list.dart';
 import 'package:service_app/screens/customer_list.dart';
 import 'package:service_app/screens/drawer_page.dart';
+import 'package:service_app/screens/inventory.dart';
 import 'package:service_app/screens/note_list.dart';
 import 'package:service_app/screens/order_list.dart';
 
@@ -11,6 +12,7 @@ class HomePage extends StatefulWidget {
     AppointmentListPage(),
     NoteListPage(),
     OrderListPage(),
+    InventoryPage(),
     CustomerListPage(),
   ];
 

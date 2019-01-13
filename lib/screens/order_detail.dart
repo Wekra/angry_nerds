@@ -107,7 +107,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   void _selectPart() {
-    Navigator.push<Part>(context, MaterialPageRoute(builder: (context) => PartListPage())).then((Part part) {
+    Navigator.push<Part>(context, MaterialPageRoute(builder: (context) => PartListPage()))
+        .then((Part part) {
       setState(() {
         _partBundles.add(PartBundle(1, part.id));
       });
@@ -128,8 +129,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   void _createOrder() {
-    WarehouseOrder order = WarehouseOrder(
-        _orderId, _description.text, DateTime.now(), WarehouseOrderStatus.open, "Order submitted", _partBundles);
+    WarehouseOrder order = WarehouseOrder(_orderId, _description.text, DateTime.now(),
+        WarehouseOrderStatus.open, "Order submitted", _partBundles);
     FirebaseRepository.instance.createOrderForTechnician(order).then((unused) {
       setState(() {
         _newOrder = false;
