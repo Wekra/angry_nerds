@@ -5,14 +5,21 @@ import 'package:service_app/screens/customer_list.dart';
 import 'package:service_app/screens/drawer_page.dart';
 import 'package:service_app/screens/note_list.dart';
 import 'package:service_app/screens/order_list.dart';
+import 'package:service_app/services/authentication.dart';
 
 class HomePage extends StatefulWidget {
+  final BaseAuth auth;
+  final VoidCallback onSignedOut;
+  final String userId;
+
   final List<DrawerPage> pages = [
     AppointmentListPage(),
     NoteListPage(),
     OrderListPage(),
     CustomerListPage(),
   ];
+
+  HomePage({this.auth, this.userId, this.onSignedOut});
 
   @override
   State<StatefulWidget> createState() {
@@ -41,6 +48,16 @@ class HomePageState extends State<HomePage> {
       ));
     }
 
+    /// Logout button
+    drawerOptions.add(new ListTile(
+      leading: new Icon(Icons.exit_to_app),
+      title: new Text('Logout'),
+      onTap: () async {
+        await widget.auth.signOut();
+        widget.onSignedOut();
+      },
+    ));
+
     return new Scaffold(
       appBar: new AppBar(
         title: new Text(widget.pages[_selectedDrawerIndex].title),
@@ -49,8 +66,10 @@ class HomePageState extends State<HomePage> {
         child: new Column(
           children: <Widget>[
             new UserAccountsDrawerHeader(
-                accountName: new Text(FirebaseRepository.instance.technician.name),
-                accountEmail: Text(FirebaseRepository.instance.technician.mail)),
+                accountName:
+                    new Text(FirebaseRepository.instance.technician.name),
+                accountEmail:
+                    Text(FirebaseRepository.instance.technician.mail)),
             new Column(children: drawerOptions)
           ],
         ),

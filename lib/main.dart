@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:service_app/data/firebase_repository.dart';
-import 'package:service_app/data/model/technician.dart';
-import 'package:service_app/screens/home.dart';
+import 'package:service_app/screens/root_page.dart';
+import 'package:service_app/services/authentication.dart';
 
 void main() => runApp(ServiceApp());
 
@@ -9,10 +8,6 @@ class ServiceApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     debugPrint("Rendering ServiceApp");
-
-    // TODO Remove once we have a login page
-    FirebaseRepository.init(Technician("7", "Der Boss", "der@boss.de", "+491629835793", "Lieferwagen"));
-
     /*
     FirebaseRepository.instance.createCustomerForTechnician(Customer("Fiducia", "mail@fiducia.com", "+497234512355",
         Address("Fiduciastraße", "20", "76227", "Karlsruhe", "Germany", 48.992988, 8.4463413)));
@@ -38,7 +33,7 @@ class ServiceApp extends StatelessWidget {
         accentColor: Colors.blueAccent[700],
         canvasColor: Colors.white,
       ),
-      home: HomePage(),
+      home: new RootPage(auth: new FireAuth()),
     );
   }
 }
