@@ -49,7 +49,7 @@ class _PartDetailPageState extends State<PartDetailPage> {
                                 mainAxisSize: MainAxisSize.max,
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: <Widget>[
-                                  new PriceWidget(part.price, part.currency, TextStyle(fontSize: 18))
+                                  PriceWidget(part.price, part.currency)
                                 ]))
                       ]),
                 ))));
