@@ -27,4 +27,8 @@ class PartBundle implements BaseEntity {
       "partId": partId,
     };
   }
+
+  PartBundle withQuantity(int newQuantity) {
+    return PartBundle._private(id, newQuantity, partId);
+  }
 }

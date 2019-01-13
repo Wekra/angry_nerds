@@ -14,6 +14,7 @@ import 'package:service_app/screens/part_list.dart';
 import 'package:service_app/screens/signature_pad.dart';
 import 'package:service_app/widgets/animated_operations_list.dart';
 import 'package:service_app/widgets/appointment.dart';
+import 'package:service_app/widgets/part.dart';
 
 class AppointmentDetailPage extends StatefulWidget {
   final String _appointmentId;
@@ -202,10 +203,18 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> with Sing
   }
 
   Widget _buildPartBundleWidget(BuildContext context, PartBundle bundle, Animation<double> animation, int index) {
-    return ListTile(
-      title: Text("Part ID: ${bundle.partId}"),
-      subtitle: Text("Quantity: ${bundle.quantity}"),
+    return FadeTransition(
+      opacity: animation,
+      child: PartBundleWidget(
+        bundle,
+        modifiable: _appointment.signatureDateTime == null,
+        onBundleChanged: _handleBundleChanged,
+      ),
     );
+  }
+
+  void _handleBundleChanged(PartBundle newBundle) {
+    FirebaseRepository.instance.addOrUpdateAppointmentPartBundle(_appointmentId, newBundle);
   }
 
   void _openCustomerDetailPage() {

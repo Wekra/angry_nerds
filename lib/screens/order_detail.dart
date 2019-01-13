@@ -5,6 +5,7 @@ import 'package:service_app/data/model/part_bundle.dart';
 import 'package:service_app/data/model/warehouse_order.dart';
 import 'package:service_app/screens/part_list.dart';
 import 'package:service_app/util/id_generator.dart';
+import 'package:service_app/widgets/part.dart';
 
 class OrderDetailPage extends StatefulWidget {
   final WarehouseOrder order;
@@ -103,16 +104,22 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   void _selectPart() {
     Navigator.push<Part>(context, MaterialPageRoute(builder: (context) => PartListPage())).then((Part part) {
-      _partBundles.add(PartBundle(1, part.id));
-      setState(() {});
+      setState(() {
+        _partBundles.add(PartBundle(1, part.id));
+      });
     });
   }
 
   Widget _buildPartBundleWidget(BuildContext context, int index) {
     PartBundle bundle = _partBundles[index];
-    return ListTile(
-      title: Text("Part ID: ${bundle.partId}"),
-      subtitle: Text("Quantity: ${bundle.quantity}"),
+    return PartBundleWidget(
+      bundle,
+      modifiable: _newOrder,
+      onBundleChanged: (PartBundle newBundle) {
+        setState(() {
+          _partBundles[index] = newBundle;
+        });
+      },
     );
   }
 

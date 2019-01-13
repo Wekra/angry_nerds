@@ -85,9 +85,11 @@ class FirebaseRepository {
     return SingleCollectionOperationStreamBuilder(Part.fromJsonMap, query).stream;
   }
 
-  Future<Optional<Part>> getPartOfBundle(PartBundle partBundle) {
-    Query partQuery = _databaseReference.child("parts/${partBundle.partId}");
-    return partQuery.once().then((DataSnapshot snapshot) => buildItemFromSnapshot(snapshot, Part.fromJsonMap));
+  Stream<Optional<Part>> getPartById(String partId) {
+    return _databaseReference
+        .child("parts/$partId")
+        .onValue
+        .map((Event event) => buildItemFromSnapshot(event?.snapshot, Part.fromJsonMap));
   }
 
   Future<void> deleteOrderForTechnician(String orderId) {
