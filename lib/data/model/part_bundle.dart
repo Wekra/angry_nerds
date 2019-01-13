@@ -6,18 +6,16 @@ class PartBundle implements BaseEntity {
   final String id;
 
   final int quantity;
-  final PartUnit unit;
   final String partId;
 
-  const PartBundle._private(this.id, this.quantity, this.unit, this.partId);
+  const PartBundle._private(this.id, this.quantity, this.partId);
 
-  PartBundle(this.quantity, this.unit, this.partId) : id = IdGenerator.generatePushChildName();
+  PartBundle(this.quantity, this.partId) : id = IdGenerator.generatePushChildName();
 
   static PartBundle fromJsonMap(String id, Map<dynamic, dynamic> map) {
     return PartBundle._private(
       id,
       map["quantity"],
-      PartUnit.values.firstWhere((v) => v.toString() == map["unit"]),
       map["partId"],
     );
   }
@@ -26,10 +24,11 @@ class PartBundle implements BaseEntity {
   Map<String, dynamic> toJsonMap() {
     return {
       "quantity": quantity,
-      "unit": unit.toString(),
       "partId": partId,
     };
   }
-}
 
-enum PartUnit { amount, litres, grams, metres }
+  PartBundle withQuantity(int newQuantity) {
+    return PartBundle._private(id, newQuantity, partId);
+  }
+}

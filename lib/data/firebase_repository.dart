@@ -85,9 +85,11 @@ class FirebaseRepository {
     return SingleCollectionOperationStreamBuilder(Part.fromJsonMap, query).stream;
   }
 
-  Future<Optional<Part>> getPartOfBundle(PartBundle partBundle) {
-    Query partQuery = _databaseReference.child("parts/${partBundle.partId}");
-    return partQuery.once().then((DataSnapshot snapshot) => buildItemFromSnapshot(snapshot, Part.fromJsonMap));
+  Stream<Optional<Part>> getPartById(String partId) {
+    return _databaseReference
+        .child("parts/$partId")
+        .onValue
+        .map((Event event) => buildItemFromSnapshot(event?.snapshot, Part.fromJsonMap));
   }
 
   Future<void> deleteOrderForTechnician(String orderId) {
@@ -106,9 +108,9 @@ class FirebaseRepository {
 
   Future<Optional<Customer>> getCustomerById(String customerId) {
     return _databaseReference
-      .child("customers/$customerId")
-      .once()
-      .then((snapshot) => buildItemFromSnapshot(snapshot, Customer.fromJsonMap));
+        .child("customers/$customerId")
+        .once()
+        .then((snapshot) => buildItemFromSnapshot(snapshot, Customer.fromJsonMap));
   }
 
   Stream<ListOperation<Customer>> getAllCustomers() {
@@ -147,53 +149,79 @@ class FirebaseRepository {
 
   // -------------------- Appointments
 
-  Stream<ListOperation<Appointment>> getAppointmentsOfTechnician() {
-    Query idsQuery = _databaseReference.child("technicians/${technician.id}/appointmentIds");
-    Query detailQuery = _databaseReference.child("appointments");
-    return ForeignKeyCollectionOperationStreamBuilder(Appointment.fromJsonMap, idsQuery, detailQuery).stream;
+  Stream<Optional<AppointmentData>> getAppointmentDataById(String appointmentId) {
+    return _databaseReference
+        .child("appointments/data/$appointmentId")
+        .onValue
+        .map((Event event) => buildItemFromSnapshot(event?.snapshot, AppointmentData.fromJsonMap));
   }
 
-  Stream<ListOperation<Appointment>> getAppointmentsOfCustomer(String customerId) {
+  Stream<ListOperation<AppointmentData>> getAppointmentDataOfTechnician() {
+    Query idsQuery = _databaseReference.child("technicians/${technician.id}/appointmentIds");
+    Query detailQuery = _databaseReference.child("appointments/data");
+    return ForeignKeyCollectionOperationStreamBuilder(AppointmentData.fromJsonMap, idsQuery, detailQuery).stream;
+  }
+
+  Stream<ListOperation<AppointmentData>> getAppointmentDataOfCustomer(String customerId) {
     Query idsQuery = _databaseReference.child("customers/$customerId/appointmentIds");
-    Query detailQuery = _databaseReference.child("appointments");
-    return ForeignKeyCollectionOperationStreamBuilder(Appointment.fromJsonMap, idsQuery, detailQuery).stream;
+    Query detailQuery = _databaseReference.child("appointments/data");
+    return ForeignKeyCollectionOperationStreamBuilder(AppointmentData.fromJsonMap, idsQuery, detailQuery).stream;
+  }
+
+  Stream<ListOperation<PartBundle>> getPartsOfAppointment(String appointmentId) {
+    Query itemQuery = _databaseReference.child("appointments/parts/$appointmentId");
+    return SingleCollectionOperationStreamBuilder(PartBundle.fromJsonMap, itemQuery).stream;
   }
 
   Stream<ListOperation<AppointmentInterval>> getIntervalsOfAppointment(String appointmentId) {
-    Query itemQuery = _databaseReference.child("appointments/$appointmentId/intervals");
+    Query itemQuery = _databaseReference.child("appointments/intervals/$appointmentId");
     return SingleCollectionOperationStreamBuilder(AppointmentInterval.fromJsonMap, itemQuery).stream;
   }
 
-  Future<void> createAppointmentForTechnician(BaseAppointment newAppointment) {
+  Future<void> createAppointmentForTechnician(AppointmentData newAppointment) {
     return _createOrUpdateAppointment(newAppointment)
-      .then((unused) =>
-      _databaseReference.child("technicians/${technician.id}/appointmentIds/${newAppointment.id}").set(true))
-      .then((unused) =>
-      _databaseReference
-        .child("customers/${newAppointment.customerId}/appointmentIds/${newAppointment.id}")
-        .set(true));
+        .then((unused) =>
+            _databaseReference.child("technicians/${technician.id}/appointmentIds/${newAppointment.id}").set(true))
+        .then((unused) => _databaseReference
+            .child("customers/${newAppointment.customerId}/appointmentIds/${newAppointment.id}")
+            .set(true));
   }
 
-  Future<void> _createOrUpdateAppointment(BaseAppointment newAppointment) {
-    return _databaseReference.child("appointments/${newAppointment.id}").update(newAppointment.toJsonMap());
+  Future<void> _createOrUpdateAppointment(AppointmentData newAppointment) {
+    return _databaseReference.child("appointments/data/${newAppointment.id}").update(newAppointment.toJsonMap());
   }
 
   Future<void> addAppointmentInterval(String appointmentId, AppointmentInterval newInterval) {
     return _databaseReference
-        .child("appointments/$appointmentId/intervals/${newInterval.id}")
+        .child("appointments/intervals/$appointmentId/${newInterval.id}")
         .set(newInterval.toJsonMap());
+  }
+
+  Future<void> addOrUpdateAppointmentPartBundle(String appointmentId, PartBundle newPartBundle) {
+    return _databaseReference
+        .child("appointments/parts/$appointmentId/${newPartBundle.id}")
+        .set(newPartBundle.toJsonMap());
+  }
+
+  Future<void> completeAppointment(String appointmentId, String signatureBase64) {
+    return _databaseReference.child("appointments/data/$appointmentId").update({
+      "signatureDateTime": DateTime.now().toIso8601String(),
+      "signatureBase64": signatureBase64,
+    });
   }
 
   Future<void> deleteAppointmentForTechnician(String appointmentId) {
     return _databaseReference
         .child("technicians/${technician.id}/appointmentIds/$appointmentId")
         .remove()
-        .then((unused) => _databaseReference.child("appointments/$appointmentId").remove());
+        .then((unused) {
+      _databaseReference.child("appointments/data/$appointmentId").remove();
+      _databaseReference.child("appointments/intervals/$appointmentId").remove();
+      _databaseReference.child("appointments/parts/$appointmentId").remove();
+    });
   }
 
   Future<void> deleteAppointmentForCustomer(String appointmentId, String customerId) {
-    return _databaseReference
-      .child("customers/$customerId/appointmentIds/$appointmentId")
-      .remove();
+    return _databaseReference.child("customers/$customerId/appointmentIds/$appointmentId").remove();
   }
 }

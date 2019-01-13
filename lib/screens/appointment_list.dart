@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:service_app/data/firebase_repository.dart';
 import 'package:service_app/data/model/appointment.dart';
 import 'package:service_app/screens/appointment_detail.dart';
+import 'package:service_app/screens/appointment_edit.dart';
 import 'package:service_app/screens/drawer_page.dart';
 import 'package:service_app/widgets/animated_operations_list.dart';
+import 'package:service_app/widgets/appointment.dart';
 
 class AppointmentListPage extends DrawerPage {
   @override
@@ -21,34 +23,39 @@ class AppointmentListPage extends DrawerPage {
 class _AppointmentListPageState extends State<AppointmentListPage> {
   @override
   Widget build(BuildContext context) {
-    debugPrint("Building AppointmentListPage state");
-    return new Scaffold(
+    debugPrint("Building AppointmentListPageState");
+    return Scaffold(
       body: AnimatedOperationsList(
-          stream: FirebaseRepository.instance.getAppointmentsOfTechnician(), itemBuilder: _buildListItem),
-      floatingActionButton: new FloatingActionButton(
-          elevation: 0.0,
-          child: new Icon(Icons.add),
-        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AppointmentDetailPage(null))),
+        stream: FirebaseRepository.instance.getAppointmentDataOfTechnician(),
+        itemBuilder: _buildAppointmentDataWidget),
+      floatingActionButton: FloatingActionButton(
+        child: new Icon(Icons.add),
+        onPressed: _openCreateNewAppointmentPage,
       ),
     );
   }
 
-  Widget _buildListItem(BuildContext context, Appointment appointment, Animation<double> animation, int index) {
+  void _openCreateNewAppointmentPage() {
+    Navigator.push<String>(context, MaterialPageRoute(builder: (context) => AppointmentEditPage(null)))
+      .then((String appointmentId) {
+      if (appointmentId != null) {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => AppointmentDetailPage(appointmentId)));
+      }
+    });
+  }
+
+  Widget _buildAppointmentDataWidget(BuildContext context, AppointmentData appointment, Animation<double> animation,
+    int index) {
     return FadeTransition(
       opacity: animation,
-      child: ListTile(
-          title: Text(appointment.description),
-          subtitle: Text(
-              "Starts at ${appointment.scheduledStartDateTime.toString()}, has ${appointment.intervals
-                  .length} intervals"),
-          onTap: () =>
-              Navigator.push(context, MaterialPageRoute(builder: (context) => AppointmentDetailPage(appointment))),
+      child: AppointmentDataListTile(
+        appointment,
         onLongPress: () => _showDeleteDialog(context, appointment),
       ),
     );
   }
 
-  void _showDeleteDialog(BuildContext context, Appointment appointment) {
+  void _showDeleteDialog(BuildContext context, AppointmentData appointment) {
     AlertDialog dialog = AlertDialog(
       title: Text("Delete appointment \"${appointment.description}\"?"),
       actions: <Widget>[

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:service_app/data/model/customer.dart';
-import 'package:service_app/widgets/customer_datatab.dart';
+import 'package:service_app/screens/customer_detail.dart';
 
 void main() {
   testWidgets('Create a new customer datatab', (WidgetTester tester) async {
     await tester.pumpWidget(new MaterialApp(
         home: new Scaffold(
-            body: new CustomerDataTab(new Customer(
+            body: new _CustomerDataTab(new Customer(
                 'Fiducia',
                 'mail@fiducia.com',
                 '+497234512355',
