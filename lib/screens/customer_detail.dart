@@ -28,8 +28,8 @@ class CustomerDetailPage extends StatelessWidget {
         ),
         body: TabBarView(
           children: <Widget>[
-            _CustomerDataTab(_customer),
-            _CustomerAppointmentTab(_customer),
+            CustomerDataTab(_customer),
+            CustomerAppointmentTab(_customer),
             Text("Here goes the list of devices"),
           ],
         ),
@@ -38,10 +38,10 @@ class CustomerDetailPage extends StatelessWidget {
   }
 }
 
-class _CustomerDataTab extends StatelessWidget {
+class CustomerDataTab extends StatelessWidget {
   final Customer _customer;
 
-  _CustomerDataTab(this._customer);
+  CustomerDataTab(this._customer);
 
   @override
   Widget build(BuildContext context) {
@@ -94,10 +94,10 @@ class _CustomerDataTab extends StatelessWidget {
   }
 }
 
-class _CustomerAppointmentTab extends StatelessWidget {
+class CustomerAppointmentTab extends StatelessWidget {
   final Customer _customer;
 
-  const _CustomerAppointmentTab(this._customer);
+  const CustomerAppointmentTab(this._customer);
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +107,8 @@ class _CustomerAppointmentTab extends StatelessWidget {
     );
   }
 
-  Widget _buildListItem(BuildContext context, AppointmentData appointment, Animation<double> animation, int index) {
+  Widget _buildListItem(
+      BuildContext context, AppointmentData appointment, Animation<double> animation, int index) {
     return FadeTransition(
       opacity: animation,
       child: AppointmentDataListTile(

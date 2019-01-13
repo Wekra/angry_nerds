@@ -7,7 +7,7 @@ void main() {
   testWidgets('Create a new customer datatab', (WidgetTester tester) async {
     await tester.pumpWidget(new MaterialApp(
         home: new Scaffold(
-            body: new _CustomerDataTab(new Customer(
+            body: new CustomerDataTab(new Customer(
                 'Fiducia',
                 'mail@fiducia.com',
                 '+497234512355',
