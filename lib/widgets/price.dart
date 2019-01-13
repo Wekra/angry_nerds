@@ -22,6 +22,10 @@ class PriceWidget extends StatelessWidget {
         break;
     }
 
-    return Text(finalText);
+    return Text(
+      finalText,
+      textAlign: TextAlign.start,
+      textDirection: TextDirection.ltr,
+    );
   }
 }
