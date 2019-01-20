@@ -110,8 +110,7 @@ class FirebaseRepository {
 
   Stream<ListOperation<PartBundle>> getPartBundlesOfTechnician() {
     Query idsQuery = _databaseReference.child("technicians/${technician.id}/partBundles");
-    Query detailQuery = _databaseReference.child("parts");
-    return ForeignKeyCollectionOperationStreamBuilder(PartBundle.fromJsonMap, idsQuery, detailQuery)
+    return SingleCollectionOperationStreamBuilder<PartBundle>(PartBundle.fromJsonMap, idsQuery)
         .stream;
   }
 
