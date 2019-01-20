@@ -6,7 +6,7 @@ import 'package:service_app/widgets/animated_operations_list.dart';
 class CustomerSelection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
+    return Scaffold(
       appBar: AppBar(
         title: Text("All customers"),
       ),

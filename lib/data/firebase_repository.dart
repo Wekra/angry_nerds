@@ -4,7 +4,6 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:quiver/core.dart';
 import 'package:service_app/data/model/appointment.dart';
 import 'package:service_app/data/model/customer.dart';
-import 'package:service_app/data/model/device.dart';
 import 'package:service_app/data/model/note.dart';
 import 'package:service_app/data/model/part.dart';
 import 'package:service_app/data/model/part_bundle.dart';
@@ -133,18 +132,19 @@ class FirebaseRepository {
     return _databaseReference.child("customers/${newCustomer.id}").update(newCustomer.toJsonMap());
   }
 
-  // -------------------- Customer details
+  // -------------------- Service products (aka. devices)
 
-  Stream<ListOperation<ServiceProduct>> getServiceProductsOfCustomer(int customerId) {
+  Future<Optional<ServiceProduct>> getServiceProductById(String id) {
+    return _databaseReference
+      .child("serviceProducts/$id")
+      .once()
+      .then((snapshot) => buildItemFromSnapshot(snapshot, ServiceProduct.fromJsonMap));
+  }
+
+  Stream<ListOperation<ServiceProduct>> getServiceProductsOfCustomer(String customerId) {
     Query idsQuery = _databaseReference.child("customers/$customerId/serviceProductIds");
     Query detailQuery = _databaseReference.child("serviceProducts");
     return ForeignKeyCollectionOperationStreamBuilder(ServiceProduct.fromJsonMap, idsQuery, detailQuery).stream;
-  }
-
-  Stream<ListOperation<Device>> getDevicesOfCustomer(int customerId) {
-    Query idsQuery = _databaseReference.child("customers/$customerId/deviceIds");
-    Query detailQuery = _databaseReference.child("devices");
-    return ForeignKeyCollectionOperationStreamBuilder(Device.fromJsonMap, idsQuery, detailQuery).stream;
   }
 
   // -------------------- Appointments

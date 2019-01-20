@@ -13,6 +13,8 @@ class AppointmentDataListTile extends StatelessWidget {
     return ListTile(
       title: Text(appointment.description),
       subtitle: Text("Starts at ${appointment.scheduledStartDateTime.toString()}"),
+      trailing: Icon(
+        appointment.signatureDateTime != null ? Icons.assignment_turned_in : Icons.check_box_outline_blank),
       onTap: () =>
           Navigator.push(context, MaterialPageRoute(builder: (context) => AppointmentDetailPage(appointment.id))),
       onLongPress: onLongPress,

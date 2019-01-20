@@ -114,7 +114,7 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
               ),
               TextFormField(
                 enabled: _editMode,
-                maxLines: 10,
+                maxLines: 5,
                 controller: _description,
                 validator: _isNotEmpty,
                 decoration: InputDecoration(
