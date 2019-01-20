@@ -8,6 +8,7 @@ import 'package:service_app/data/model/appointment.dart';
 import 'package:service_app/data/model/customer.dart';
 import 'package:service_app/data/model/part.dart';
 import 'package:service_app/data/model/part_bundle.dart';
+import 'package:service_app/data/model/service_product.dart';
 import 'package:service_app/screens/appointment_edit.dart';
 import 'package:service_app/screens/customer_detail.dart';
 import 'package:service_app/screens/part_list.dart';
@@ -41,6 +42,7 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> with Sing
 
   AppointmentData _appointment;
   Customer _customer;
+  ServiceProduct _serviceProduct;
   StreamSubscription _appointmentSubscription;
 
   _AppointmentDetailPageState(this._appointmentId);
@@ -66,6 +68,11 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> with Sing
           _appointment = appointment;
           _customer = customerOpt.orNull;
           _floatingActionButton = _buildFloatingActionButton();
+        });
+      });
+      FirebaseRepository.instance.getServiceProductById(appointment.serviceProductId).then((serviceProductOpt) {
+        setState(() {
+          _serviceProduct = serviceProductOpt.orNull;
         });
       });
     } else {
@@ -132,6 +139,11 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> with Sing
         title: Text(_customer != null ? _customer.name : ""),
         subtitle: Text("Customer"),
         onTap: _openCustomerDetailPage,
+      ),
+      ListTile(
+        title: Text(_serviceProduct != null ? _serviceProduct.name : ""),
+        subtitle: Text("Service product"),
+        onTap: _openCustomerServiceProductsPage,
       ),
       ListTile(
         title: Text(_appointment.signatureDateTime?.toString() ?? "Not signed yet"),
@@ -219,7 +231,13 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> with Sing
 
   void _openCustomerDetailPage() {
     if (_customer != null) {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => CustomerDetailPage(_customer)));
+      Navigator.push(context, MaterialPageRoute(builder: (context) => CustomerDetailPage(_customer, 0)));
+    }
+  }
+
+  void _openCustomerServiceProductsPage() {
+    if (_customer != null) {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => CustomerDetailPage(_customer, 2)));
     }
   }
 

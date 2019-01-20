@@ -33,7 +33,7 @@ class _CustomerListPageState extends State<CustomerListPage> {
       child: ListTile(
         title: Text(customer.name),
         subtitle: Text(customer.address.toString()),
-        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => CustomerDetailPage(customer))),
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => CustomerDetailPage(customer, 0))),
       ),
     );
   }

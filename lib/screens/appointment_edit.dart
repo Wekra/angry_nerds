@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:service_app/data/firebase_repository.dart';
 import 'package:service_app/data/model/appointment.dart';
+import 'package:service_app/data/model/customer.dart';
+import 'package:service_app/data/model/service_product.dart';
 import 'package:service_app/screens/customer_selection.dart';
+import 'package:service_app/screens/service_product_selection.dart';
 import 'package:service_app/util/id_generator.dart';
 import 'package:service_app/widgets/pickers.dart';
 
@@ -18,14 +21,16 @@ class _AppointmentEditPageState extends State<AppointmentEditPage> {
   final _formKey = GlobalKey<FormState>();
 
   String _appointmentId;
-  String _customerId;
+  Customer _customer;
   String _originalCustomerId;
+  ServiceProduct _serviceProduct;
 
   final TextEditingController _description = TextEditingController();
   final TextEditingController _scheduledStart = TextEditingController();
   final TextEditingController _scheduledEnd = TextEditingController();
   final TextEditingController _creation = TextEditingController();
   final TextEditingController _customerName = TextEditingController();
+  final TextEditingController _serviceProductName = TextEditingController();
 
   _AppointmentEditPageState(AppointmentData appointment) {
     if (appointment != null) {
@@ -45,10 +50,18 @@ class _AppointmentEditPageState extends State<AppointmentEditPage> {
     FirebaseRepository.instance
         .getCustomerById(appointment.customerId)
         .then((customerOpt) => customerOpt.ifPresent((customer) {
-              _customerId = customer.id;
+      _customer = customer;
               _originalCustomerId = customer.id;
               _customerName.text = customer.name;
             }));
+
+    FirebaseRepository.instance
+      .getServiceProductById(appointment.serviceProductId)
+      .then((serviceProductOpt) =>
+      serviceProductOpt.ifPresent((serviceProduct) {
+        _serviceProduct = serviceProduct;
+        _serviceProductName.text = serviceProduct.name;
+      }));
   }
 
   void _initForNewAppointment() {
@@ -96,6 +109,18 @@ class _AppointmentEditPageState extends State<AppointmentEditPage> {
                   onTap: _pickCustomer,
                 ),
               ),
+              Container(
+                margin: EdgeInsets.only(bottom: 8),
+                child: InkWell(
+                  child: TextFormField(
+                    enabled: false,
+                    controller: _serviceProductName,
+                    validator: _isNotEmpty,
+                    decoration: InputDecoration(labelText: "Service product", disabledBorder: InputBorder.none),
+                  ),
+                  onTap: _pickServiceProduct,
+                ),
+              ),
             ],
           ),
         ),
@@ -106,8 +131,25 @@ class _AppointmentEditPageState extends State<AppointmentEditPage> {
   void _pickCustomer() {
     Navigator.push(context, MaterialPageRoute(builder: (context) => CustomerSelection())).then((customer) {
       if (customer != null) {
-        _customerId = customer.id;
+        _customer = customer;
         _customerName.text = customer.name;
+        _serviceProduct = null;
+        _serviceProductName.text = "";
+        _pickServiceProduct();
+      }
+    });
+  }
+
+  void _pickServiceProduct() {
+    if (_customer == null) {
+      _pickCustomer();
+      return;
+    }
+    Navigator.push(context, MaterialPageRoute(builder: (context) => ServiceProductSelection(_customer)))
+      .then((serviceProduct) {
+      if (serviceProduct != null) {
+        _serviceProduct = serviceProduct;
+        _serviceProductName.text = serviceProduct.name;
       }
     });
   }
@@ -153,7 +195,8 @@ class _AppointmentEditPageState extends State<AppointmentEditPage> {
             DateTime.parse(_scheduledStart.text),
             DateTime.parse(_scheduledEnd.text),
             DateTime.parse(_creation.text),
-            _customerId,
+          _customer.id,
+          _serviceProduct.id,
             null,
             // Signature cannot exists at this point because completed appointments cannot be edited
             null);
@@ -165,7 +208,7 @@ class _AppointmentEditPageState extends State<AppointmentEditPage> {
   }
 
   Future<void> _deleteAppointmentForCustomerIfExisted() {
-    if (_originalCustomerId != null && _originalCustomerId != _customerId) {
+    if (_originalCustomerId != null && _originalCustomerId != _customer.id) {
       return FirebaseRepository.instance.deleteAppointmentForCustomer(_appointmentId, _originalCustomerId);
     } else {
       return Future.value();

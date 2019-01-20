@@ -10,11 +10,12 @@ class AppointmentData implements BaseEntity {
   final DateTime scheduledEndDateTime;
   final DateTime creationDateTime;
   final String customerId;
+  final String serviceProductId;
   final DateTime signatureDateTime;
   final String signatureBase64;
 
   const AppointmentData(this.id, this.description, this.scheduledStartDateTime, this.scheduledEndDateTime,
-    this.creationDateTime, this.customerId, this.signatureDateTime, this.signatureBase64);
+    this.creationDateTime, this.customerId, this.serviceProductId, this.signatureDateTime, this.signatureBase64);
 
   static AppointmentData fromJsonMap(String id, Map<dynamic, dynamic> map) {
     return AppointmentData(
@@ -24,6 +25,7 @@ class AppointmentData implements BaseEntity {
       DateTime.parse(map["scheduledEndDateTime"]),
       DateTime.parse(map["creationDateTime"]),
       map["customerId"],
+      map["serviceProductId"],
       map.containsKey("signatureDateTime") ? DateTime.parse(map["signatureDateTime"]) : null,
       map["signatureBase64"],
     );
@@ -37,6 +39,7 @@ class AppointmentData implements BaseEntity {
       "scheduledEndDateTime": scheduledEndDateTime.toIso8601String(),
       "creationDateTime": creationDateTime.toIso8601String(),
       "customerId": customerId,
+      "serviceProductId": serviceProductId,
       "signatureDateTime": signatureDateTime?.toIso8601String(),
       "signatureBase64": signatureBase64,
     };
