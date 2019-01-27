@@ -42,6 +42,17 @@ matrix:
         - ANDROID_HOME=$HOME/android-sdk
       os: linux
       language: android
+      android:
+        components:
+          - tools
+          - platform-tools
+          - build-tools-27.0.3
+          - android-27
+          - extra-google-m2repository
+        licenses:
+          - 'android-sdk-preview-license-52d11cd2'
+          - 'android-sdk-license-.+'
+          - 'google-gdk-license-.+'
       jdk: oraclejdk8
       before_cache:
         # Do not cache a few Gradle files/directories (see https://docs.travis-ci.com/user/languages/java/#Caching)
