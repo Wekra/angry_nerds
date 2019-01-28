@@ -5,7 +5,6 @@ import 'package:service_app/screens/customer_list.dart';
 import 'package:service_app/screens/drawer_page.dart';
 import 'package:service_app/screens/inventory.dart';
 import 'package:service_app/screens/note_list.dart';
-import 'package:service_app/screens/order_list.dart';
 import 'package:service_app/services/authentication.dart';
 
 class HomePage extends StatefulWidget {
@@ -16,7 +15,6 @@ class HomePage extends StatefulWidget {
   final List<DrawerPage> pages = [
     AppointmentListPage(),
     NoteListPage(),
-    OrderListPage(),
     InventoryPage(),
     CustomerListPage(),
   ];
@@ -68,10 +66,8 @@ class HomePageState extends State<HomePage> {
         child: new Column(
           children: <Widget>[
             new UserAccountsDrawerHeader(
-                accountName:
-                    new Text(FirebaseRepository.instance.technician.name),
-                accountEmail:
-                    Text(FirebaseRepository.instance.technician.mail)),
+                accountName: new Text(FirebaseRepository.instance.technician.name),
+                accountEmail: Text(FirebaseRepository.instance.technician.mail)),
             new Column(children: drawerOptions)
           ],
         ),

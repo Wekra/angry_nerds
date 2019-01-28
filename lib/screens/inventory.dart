@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:service_app/screens/drawer_page.dart';
 import 'package:service_app/widgets/inventory_orderstab.dart';
+import 'package:service_app/widgets/inventory_warehousetab.dart';
 
 class InventoryPage extends DrawerPage {
   InventoryPage();
@@ -31,9 +32,10 @@ class _InventoryPageState extends State<InventoryPage> {
             body: new TabBarView(
               children: <Widget>[
                 new InventoryOrdersTab(),
-                new Center(
-                  child: Text("Here goes the warehouse"),
-                )
+                new InventoryWarehouseTab()
+                //new Center(
+                //child: Text("Here goes the warehouse"),
+                //)
               ],
             )));
   }
