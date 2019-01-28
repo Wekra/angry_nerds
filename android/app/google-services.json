@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "55552011488",
+    "firebase_url": "https://serviceapp-bbaf5.firebaseio.com",
+    "project_id": "serviceapp-bbaf5",
+    "storage_bucket": "serviceapp-bbaf5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:55552011488:android:996797e71ff0f0e6",
+        "android_client_info": {
+          "package_name": "de.hska.service_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "55552011488-likc1uamtqa6pgc4p4pansbbcvbo7b75.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAqPZevCvqvtUTd1J3FK4yo62NScRnjiPM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
